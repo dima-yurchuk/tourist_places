@@ -6,6 +6,15 @@ from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 from sqlalchemy import select, func, and_
 
 
+class Category(db.Model):  # type: ignore
+    id = db.Column(db.Integer, primary_key=True)  # type: ignore
+    name = db.Column(db.String(25), unique=True, nullable=False)
+
+    category = db.relationship('Place', backref='category_br', lazy=True)
+
+    def __repr__(self):
+        return f"Category('{self.name}'')"
+
 class Region(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), unique=True, nullable=False)
@@ -26,6 +35,8 @@ class Place(db.Model):  # type: ignore
     content = db.Column(db.Text)
     coordinates = db.Column(db.String(25), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now)
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'),
+                            nullable=False)
 
     comments = db.relationship('Comment', backref='post_br', lazy=True)
     ratings = db.relationship('Rating', backref='post_br', lazy=True)
