@@ -3,6 +3,7 @@ from flask import render_template, redirect, url_for, flash, request, \
 from flask_login import login_user, current_user, logout_user, login_required
 
 from . import user_bp
+from app import db
 from .forms import LoginForm, RegistrationForm
 from .models import User
 
@@ -35,14 +36,26 @@ def account():
     return render_template('account.html')
 
 
-@user_bp.route('/register')
+@user_bp.route('/register', methods=['GET', 'POST'])
 def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(username=form.username.data,
                     email=form.email.data,
                     password=form.password.data)
-    return render_template('register.html', title='TorP', form=form)
+        print(user)
+        try:
+            db.session.add(user)
+            db.session.commit()
+            flash(f'Користувач {form.username.data} успішно зареєстрований!',
+                  'success')
+        except:
+            db.session.rollback()
+            flash('Помилка при реєстрації!', 'danger')
+        return redirect(url_for('user_bp_in.login'))
+    return render_template('register.html', title='Register', form=form)
 
 @user_bp.route('/logout')
 def logout():

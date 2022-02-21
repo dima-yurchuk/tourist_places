@@ -12,7 +12,6 @@ def check_letters(form, string):
         raise ValidationError('Пароль повинен містити великі та малі літери')
 
 
-
 def check_digits(form, string):
     if not any(x.isdigit() for x in string.data):
         raise ValidationError('Пароль повинен містити цифру')
@@ -27,6 +26,7 @@ def check_symbols(form, string):
 def check_spaces(form, string):
     if ' ' in string.data:
         raise ValidationError('Пароль не повинен містити пробіли')
+
 
 class LoginForm(FlaskForm):
     email = StringField(
