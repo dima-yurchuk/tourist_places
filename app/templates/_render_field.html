@@ -1,0 +1,20 @@
+{% macro render_field_lr(field, placeholder) %}
+  <div class="form-group p-1" style="size:35%">
+<!--    <div class="form-control-label">-->
+<!--      {{ field.label }}-->
+<!--    </div>-->
+
+    {% if field.errors %}
+      <div class="form-control is-invalid">
+        {{ field(class="form-control", placeholder=placeholder) }}
+      </div>
+      <div class="invalid-feedback">
+        {% for error in field.errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      </div>
+     {% else %}
+        {{ field(class="form-control", placeholder=placeholder) }}
+    {% endif %}
+  </div>
+{% endmacro %}
