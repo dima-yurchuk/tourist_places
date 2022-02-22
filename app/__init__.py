@@ -20,7 +20,7 @@ def create_app(config_filename=None):
         from .user.models import User
         from .tourist_places.models import Comment, Place, Region, Rating, Type
         app.register_blueprint(user_bp, url_prefix='/auth')
-        app.register_blueprint(place_bp, url_prefix='')
+        app.register_blueprint(place_bp, url_prefix='/place')
         db.create_all()
         from app import views
         from app import forms

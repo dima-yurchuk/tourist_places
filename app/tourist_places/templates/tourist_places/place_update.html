@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block main %}
+{% from "_render_field.html" import render_field_lr, render_editor_field %}
+<div class="container form-control p-5 short-form"
+     style="background:#E8F8F5; width:70%">
+    <div class="col-md-15 col-md-offset-5">
+        <h3 class="panel-title">Редагувати</h3>
+        <form method="post"
+              enctype="multipart/form-data">
+            {{ form.csrf_token }}
+
+            {{render_field_lr(form.category)}}
+            {{render_field_lr(form.region)}}
+            {{render_field_lr(form.title)}}
+            <div style="background:white;">
+                {{render_editor_field(form.content)}}
+            </div>
+            {{render_field_lr(form.coordinates)}}
+            {{form.submit(class="btn mt-3 btn-lg btn-success btn-block")}}
+        </form>
+
+    </div>
+</div>
+<script>
+   $(document).ready(function() {
+     $('#editor').summernote({
+       toolbar: [
+          ['style', ['style']],
+          ['font', ['bold', 'underline', 'italic', 'clear']],
+          ['fontname', ['fontname']],
+          ['color', ['color']],
+          ['backColor', ['red']],
+          ['para', ['ul', 'ol', 'paragraph']],
+          ['table', ['table']],
+          ['insert', ['link', 'picture', 'video']],
+          ['view', ['help']],
+        ],
+        maximumImageFileSize: 358400, // 350 KB
+        height: 300
+      });
+     // @param {String} color
+   });
+</script>
+{% endblock main %}

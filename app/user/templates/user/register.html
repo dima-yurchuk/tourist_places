@@ -1,16 +1,21 @@
 {% extends 'base.html' %}
 {% block main %}
 {% from "_render_field.html" import render_field_lr %}
-<div class="container form-control p-5 short-form" style="background:#E8F8F5; width:33%">
+<div class="container form-control p-5 short-form"
+     style="background:#E8F8F5; width:33%">
     <div class="col-md-15 col-md-offset-5">
         <h3 class="panel-title">Реєстрація</h3>
         <form method="post" action="{{ url_for('user_bp_in.register') }}"
               enctype="multipart/form-data">
             {{ form.csrf_token }}
+            {% for message in get_flashed_messages() %}
+            <div class="flash">{{ message }}</div>
+            {% endfor %}
             {{render_field_lr(form.username, placeholder="Ім'я користувача")}}
             {{render_field_lr(form.email, placeholder="Email")}}
             {{render_field_lr(form.password, placeholder="Пароль")}}
-            {{render_field_lr(form.confirm_password, placeholder="Підтвердження паролю")}}
+            {{render_field_lr(form.confirm_password, placeholder="Підтвердження
+            паролю")}}
             {{form.submit(class="btn mt-3 btn-lg btn-success btn-block")}}
         </form>
 
