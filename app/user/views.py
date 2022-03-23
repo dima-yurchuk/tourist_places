@@ -44,7 +44,8 @@ def register():
     if form.validate_on_submit():
         user = User(username=form.username.data,
                     email=form.email.data,
-                    password=form.password.data)
+                    password=form.password.data,
+                    role_id=3)
         print(user)
         try:
             db.session.add(user)

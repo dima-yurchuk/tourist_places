@@ -2,9 +2,6 @@
 {% block main %}
 {% from "_render_field.html" import render_field_lr %}
 <div align="center">
-       {% for message in get_flashed_messages() %}
-        <div class="flash">{{ message }}</div>
-    {% endfor %}
     {{current_user.username}}
 </div>
 {% endblock main %}

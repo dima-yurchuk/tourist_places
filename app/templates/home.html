@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
 {% block main %}
 <div align="center"
-     style="margin:auto; width: 70%; background:silver;">
+     style="margin:auto; width: 70%; ">
     {% for message in get_flashed_messages() %}
                 <div class="flash">{{ message }}</div>
             {% endfor %}
-    {% for place in places%}
+    {%if places|length > 0%}
+        {% for place in places%}
     <div class="card text-center" style="width:77%">
         <div class="card-header">
             {{place.place_br.name}}
@@ -20,5 +21,9 @@
     </div>
     <br>
     {% endfor %}
+    {%else%}
+    Немає доступних місць
+    {%endif%}
+
 </div>
 {% endblock %}

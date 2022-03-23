@@ -17,23 +17,16 @@ class User(db.Model, UserMixin):  # type: ignore
 
     id = db.Column(db.Integer, primary_key=True)  # type: ignore
     username = db.Column(db.String(30), unique=True, nullable=False)
-    # type: ignore
     email = db.Column(db.String(50), unique=True, nullable=False)
-    # type: ignore
     password = db.Column(db.String(70), nullable=False)
-    # type: ignore
     picture = db.Column(db.String(30), nullable=False,
                         server_default='default.jpg')  # type: ignore
-    admin = db.Column(db.Boolean, default=False)  # type: ignore
+    role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=False)
 
     comment = db.relationship('Comment', backref='user_br', lazy=True)
-    # type: ignore
     like = db.relationship('Rating', backref='user_br', lazy=True)
-    # type: ignore
     posts = db.relationship('Place', backref='user_br', lazy=True)
-    # type: ignore
     type = db.relationship('Type', backref='user_br', lazy=True)
-    # type: ignore
 
     def is_admin(self):
         return self.admin
@@ -43,3 +36,13 @@ class User(db.Model, UserMixin):  # type: ignore
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
+
+
+class Role(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20), unique=True, nullable=False)
+
+    user = db.relationship('User', backref='user_br', lazy=True)
+
+    def __repr__(self):
+        return f"Role('{self.name}'')"

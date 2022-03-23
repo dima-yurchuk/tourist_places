@@ -21,10 +21,28 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light"
-     style="background-color: #D4EFDF ;">
+     style="background-color:	#B0E0E6;">
     <div class="container">
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <a class="navbar-brand text-decoration-underline" href="/">RestInUA</a>
+        {% if current_user.role_id==2 %}
+         <div class="navbar-nav">
+                     <a class="nav-item nav-link rounded bi bi-person-plus-fill"
+                       href="{{url_for('place_bp_in.place_create')}}"> <b>Додати пост</b></a>
+                    <a class="nav-item nav-link rounded bi bi-person-plus-fill"
+                                   href="{{url_for('place_bp_in.place_create')}}"> <b>Мої публікації</b></a>
+                    <a class="nav-item nav-link rounded bi bi-box-arrow-in-right"
+                               href="{{url_for('user_bp_in.account')}}"> <b>Профіль</b></a>
+                    <a class="nav-item nav-link rounded bi bi-person-plus-fill"
+                               href="{{url_for('user_bp_in.logout')}}"> <b>Вийти</b></a>
+         </div>
+        {%else%}
+        <a class="navbar-brand me-5" href="/">RestInUA 🇺🇦</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
             <div class="dropdown">
                 <a class="navbar-brand dropdown-toggle" href="#"
                    role="button"
@@ -55,13 +73,12 @@
             </div>
             <a class="navbar-brand" href="#">Категорії</a>
             <div class="col-5">
-                <form class="d-flex">
-                    <input class="form-control me-2" type="search"
-                           placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">
-                        Search
-                    </button>
-                </form>
+                         <form class="d-flex">
+                <input class="form-control me-2" type="search"
+                       placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search
+                </button>
+            </form>
             </div>
             {% if current_user.is_authenticated %}
             <div class="navbar-nav ">
@@ -69,8 +86,10 @@
                    href="{{url_for('user_bp_in.account')}}"> <b>Профіль</b></a>
                 <a class="nav-item nav-link rounded bi bi-person-plus-fill"
                    href="{{url_for('user_bp_in.logout')}}"> <b>Вийти</b></a>
-                 <a class="nav-item nav-link rounded bi bi-person-plus-fill"
-                   href="{{url_for('place_bp_in.place_create')}}"> <b>Додати пост</b></a>
+                 {% if current_user.role_id==2 %}
+                     <a class="nav-item nav-link rounded bi bi-person-plus-fill"
+                       href="{{url_for('place_bp_in.place_create')}}"> <b>Додати пост</b></a>
+                  {% endif %}
             </div>
             {% else %}
             <div class="navbar-nav ">
@@ -81,15 +100,28 @@
             </div>
             {% endif %}
         </div>
-    </div>
+
+        {% endif %}</div>
 </nav>
-{% for message in get_flashed_messages() %}
-{% endfor %}
-<!--  <main class="container d-flex flex-column">-->
-<div>
+<main class="container d-flex flex-column">
+    <br>
+    <div style="margin:auto;width:70%">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+           <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    </div>
+    <div>
     {% block main %}
     {% endblock %}
-</div>
+    </div>
+  </main>
 <!--  </main>-->
 </body>
 </html>
