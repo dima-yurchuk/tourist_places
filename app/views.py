@@ -1,5 +1,9 @@
 from flask import render_template, request, current_app as app
-from .tourist_places.models import Place
+from .tourist_places.models import Place, Category
+
+@app.context_processor
+def inject_category():
+    return dict(categories=Category.query.all())
 
 @app.route('/')
 def home():

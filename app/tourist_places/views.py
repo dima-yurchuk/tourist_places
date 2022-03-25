@@ -94,3 +94,17 @@ def place_delete(place_id):
         flash('Помилка при видаленні публікації', 'danger')
     return redirect(url_for('home'))
 
+@place_bp.route('/region_places/<int:region_id>/', methods=["GET", "POST"])
+def region_places(region_id):
+    places = Place.query.filter_by(region_id=region_id)
+    region = Region.query.get_or_404(region_id)
+    return render_template('region_places.html',
+                           title=region.name, places=places)
+
+@place_bp.route('/category_places/<int:category_id>/', methods=["GET", "POST"])
+def category_places(category_id):
+    places = Place.query.filter_by(category_id=category_id)
+    category = Category.query.get_or_404(category_id)
+    return render_template('category_places.html',
+                           title=category.name, places=places)
+

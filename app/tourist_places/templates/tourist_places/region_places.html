@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block main %}
+<div align="center"
+     style="margin:auto; width: 70%; ">
+    {% for message in get_flashed_messages() %}
+                <div class="flash">{{ message }}</div>
+    {% endfor %}
+    <h3>Область: {{title}}</h3>
+    {%if places.count() > 0%}
+        {% for place in places%}
+    <div class="card text-center" style="width:77%">
+        <div class="card-header">
+            {{place.place_br.name}}
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">{{place.title}}</h5>
+            <a href="{{url_for('place_bp_in.place_view', place_id=place.id)}}" class="btn btn-primary">Повна інформація</a>
+        </div>
+        <div class="card-footer text-muted">
+            {{place.created_at.strftime('%d.%m.%Y')}}
+        </div>
+    </div>
+    <br>
+    {% endfor %}
+    {%else%}
+    Немає доступних місць
+    {%endif%}
+
+</div>
+{% endblock %}

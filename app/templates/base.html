@@ -46,32 +46,42 @@
             <div class="dropdown">
                 <a class="navbar-brand dropdown-toggle" href="#"
                    role="button"
-                   id="dropdownMenuLink" data-bs-toggle="dropdown"
+                   id="dropdownRegions" data-bs-toggle="dropdown"
                    aria-expanded="false">
                     Області
                 </a>
 
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <ul class="dropdown-menu" aria-labelledby="dropdownRegions">
                     <table>
                         {%for i in range(0,5)%}
                         <tr>
                             {%for j in range(0,5)%}
                             <td>
-                                {{regions[5*i].name}}
+                                <a href="{{url_for('place_bp_in.region_places', region_id=regions[5*i+j].id)}}">{{regions[5*i+j].name}}</a>
                             </td>
                         {% endfor %}
                         </tr>
                         {% endfor %}
                     </table>
-<!--                    <li><a class="dropdown-item" href="#">Action</a></li>-->
-<!--                    <li><a class="dropdown-item" href="#">Another action</a>-->
-<!--                    </li>-->
-<!--                    <li><a class="dropdown-item" href="#">Something else-->
-<!--                        here</a>-->
-<!--                    </li>-->
                 </ul>
             </div>
-            <a class="navbar-brand" href="#">Категорії</a>
+<!--            ---------------------------------------------------------       -->
+           <div class="dropdown">
+                <a class="navbar-brand dropdown-toggle" href="#"
+                   role="button"
+                   id="dropdownCategories" data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    Категорії
+                </a>
+
+                <ul class="dropdown-menu" aria-labelledby="dropdownCategories">
+                        {%for category in categories%}
+                            <li>
+                                <a href="{{url_for('place_bp_in.category_places', category_id=category.id)}}" class="dropdown-item">{{category.name}}</a>
+                            </li>
+                        {% endfor %}
+                </ul>
+            </div>
             <div class="col-5">
                          <form class="d-flex">
                 <input class="form-control me-2" type="search"
