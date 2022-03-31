@@ -36,3 +36,30 @@
     {% endif %}
   </div>
 {% endmacro %}
+
+{% macro render_place_list(places) %}
+    <div align="center"
+         style="margin:auto; width: 70%; ">
+        {% for message in get_flashed_messages() %}
+        <div class="flash">{{ message }}</div>
+        {% endfor %}
+        {%if places|length > 0%}
+        {% for place in places%}
+        <div class="card text-center post-items">
+            <div class="card-header place-item-header">
+                <a href="{{url_for('place_bp_in.region_places', region_id=place.region_br.id)}}">{{place.region_br.name}} </a>область<br>
+                Категорія: <a
+                    href="{{url_for('place_bp_in.category_places', category_id=place.category_br.id)}}">{{place.category_br.name}}</a>
+            </div>
+            <div class="card-body place-item">
+                <a href="{{url_for('place_bp_in.place_view', place_id=place.id)}}">{{place.title}}</a>
+            </div>
+        </div>
+        <br>
+        {% endfor %}
+        {%else%}
+        Немає доступних місць
+        {%endif%}
+
+    </div>
+{% endmacro %}

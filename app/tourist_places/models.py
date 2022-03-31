@@ -15,11 +15,12 @@ class Category(db.Model):  # type: ignore
     def __repr__(self):
         return f"Category('{self.name}'')"
 
+
 class Region(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), unique=True, nullable=False)
 
-    region = db.relationship('Place', backref='place_br', lazy=True)
+    region = db.relationship('Place', backref='region_br', lazy=True)
 
     def __repr__(self):
         return f"Region('{self.name}'')"
@@ -28,14 +29,17 @@ class Region(db.Model):
 class Place(db.Model):  # type: ignore
 
     id = db.Column(db.Integer, primary_key=True)
-    region_id = db.Column(db.Integer, db.ForeignKey('region.id'),
+    region_id = db.Column(db.Integer, db.ForeignKey('region.id',
+                                                    ondelete='RESTRICT'),
                           nullable=False)
-    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id',
+                                                    ondelete='RESTRICT'))
     title = db.Column(db.String(120), nullable=False)
     content = db.Column(db.Text)
     coordinates = db.Column(db.String(25), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now)
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'),
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id',
+                                                      ondelete='RESTRICT'),
                             nullable=False)
 
     comments = db.relationship('Comment', backref='post_br', lazy=True)
@@ -48,8 +52,10 @@ class Place(db.Model):  # type: ignore
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    place_id = db.Column(db.Integer, db.ForeignKey('place.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id',
+                                                  ondelete='RESTRICT'))
+    place_id = db.Column(db.Integer, db.ForeignKey('place.id',
+                                                   ondelete='RESTRICT'))
     text = db.Column(db.String(500), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now)
 
@@ -60,8 +66,10 @@ class Comment(db.Model):
 
 class Rating(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    place_id = db.Column(db.Integer, db.ForeignKey('place.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id',
+                                                  ondelete='RESTRICT'))
+    place_id = db.Column(db.Integer, db.ForeignKey('place.id',
+                                                   ondelete='RESTRICT'))
     mark = db.Column(db.Float)
 
     def __repr__(self):
@@ -71,10 +79,12 @@ class Rating(db.Model):
 
 class Type(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    place_id = db.Column(db.Integer, db.ForeignKey('place.id'))
-    type = db.Column(db.Integer)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id',
+                                                  ondelete='RESTRICT'))
+    place_id = db.Column(db.Integer, db.ForeignKey('place.id',
+                                                   ondelete='RESTRICT'))
+    place_type = db.Column(db.String(25), unique=True, nullable=False)
 
     def __repr__(self):
         return f'<Type {self.id} {self.user_id} {self.place_id} ' \
-               f'{self.type} >'
+               f'{self.place_type} >'

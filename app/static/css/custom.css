@@ -13,3 +13,24 @@ body::after {
 .content-block{
   background:rgba(255, 255, 255, 0.7);
 }
+.post-items{
+    border: 3px solid gray;
+    background:rgba(255, 255, 255, 0);
+}
+.place-item-header{
+    background:rgba(204, 229, 255, 0.7);
+}
+.place-item{
+    background:rgba(255, 255, 255, 0.7);
+}
+.main-block{
+    margin:auto;
+    width:70%;
+    margin-top:30px
+}
+.profile-info{
+    background: rgba(255, 255, 255, 0.5);
+}
+.account-menu{
+    background-color: #f6f9fb;
+}

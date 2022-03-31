@@ -3,11 +3,12 @@
 {% from "_render_field.html" import render_field_lr %}
 <div class="card text-center" style="width:77%; margin: 0 auto;">
     <div class="card-header">
-        {% for message in get_flashed_messages() %}
-            <div class="flash">{{ message }}</div>
-            {% endfor %}
-        {{place.place_br.name}}
-        {% if current_user.is_authenticated %}
+        {{place.region_br.name}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="{{url_for('place_bp_in.favourite_list_handle', place_id=place.id)}}" id="favourite_icon" class="bi"></a>
+        <a href="{{url_for('place_bp_in.visited_list_handle', place_id=place.id)}}" id="visited_icon" class="bi"></a>
+        <a href="{{url_for('place_bp_in.want_to_visit_list_handle', place_id=place.id)}}" id="want_to_visit_icon" class="bi"></a>
+
+        {% if current_user.is_authenticated and current_user.id == place.user_id%}
         <a href="{{url_for('place_bp_in.place_update', place_id=place.id)}}" class="btn btn-info">Редагувати</a>
         <a href="{{url_for('place_bp_in.place_delete', place_id=place.id)}}" class="btn btn-danger">Видалити</a>
         {% endif %}
@@ -21,4 +22,30 @@
         {{place.created_at.strftime('%d.%m.%Y')}}
     </div>
 </div>
+<script>
+<!--    змінюємо іконку додавання місць до списків користувача-->
+    {% if not current_user.is_favourite_place(place) %}
+        $(document).ready(function(){
+            $("#favourite_icon").addClass("bi-heart").prop('title', 'Додади до списку улюблених місць');
+        })
+    {% else %}
+        $("#favourite_icon").addClass("bi-heart-fill").prop('title', 'Видалити зі списку улюблених місць');
+    {% endif %}
+<!--    -------------------------------------------------------------------------------------------  -->
+     {% if not current_user.is_visited_place(place) %}
+        $(document).ready(function(){
+            $("#visited_icon").addClass("bi-check-square").prop('title', 'Додади до списку відвіданих місць');
+        })
+    {% else %}
+        $("#visited_icon").addClass("bi-check-square-fill").prop('title', 'Видалити зі списку відвіданих місць');
+    {% endif %}
+<!--    -------------------------------------------------------------------------------------------  -->
+     {% if not current_user.is_want_to_visit_place(place) %}
+        $(document).ready(function(){
+            $("#want_to_visit_icon").addClass("bi-bag-plus").prop('title', 'Додади до списку місць, які хочу відвідати');
+        })
+    {% else %}
+        $("#want_to_visit_icon").addClass("bi-bag-plus-fill").prop('title', 'Видалити до списку місць, які хочу відвідати');
+    {% endif %}
+</script>
 {% endblock main %}

@@ -31,11 +31,6 @@ def login():
     return render_template('login.html', form=form, title='Login')
 
 
-@user_bp.route('/account')
-def account():
-    return render_template('account.html')
-
-
 @user_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -58,8 +53,14 @@ def register():
         return redirect(url_for('user_bp_in.login'))
     return render_template('register.html', title='Register', form=form)
 
+
 @user_bp.route('/logout')
 def logout():
     logout_user()
     flash('Ви вийшли зі свого облікового запису', 'info')
     return redirect(url_for('user_bp_in.login'))
+
+
+@user_bp.route('/account')
+def account():
+    return render_template('account.html')

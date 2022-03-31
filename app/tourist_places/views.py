@@ -1,6 +1,6 @@
 from flask import current_app as app, render_template, flash, redirect, \
     url_for, abort, request
-from .models import Region, Place, Category
+from .models import Region, Place, Category, Type
 from . import place_bp
 from .form import FormPlaceCreate, FormPlaceUpdate
 from app import db
@@ -15,6 +15,8 @@ def get_regions_list():
 @place_bp.route('/create', methods=['GET', 'POST'])
 @login_required
 def place_create():
+    if current_user.role_id != 2:
+        abort(403, description="Ви не маєте доступу до цієї сторінки")
     form = FormPlaceCreate.new()
     if form.validate_on_submit():
         category = db.session.query(Category.id).filter(
@@ -47,12 +49,12 @@ def place_view(place_id):
     return render_template('place_view.html', place=place)
 
 @place_bp.route('/<int:place_id>/update', methods=["GET", "POST"])
+@login_required
 def place_update(place_id):
     form = FormPlaceUpdate.new()
     place = Place.query.get_or_404(place_id)
-    if not current_user.is_authenticated or current_user.id != place.user_id:
-        abort(403, description="Ви не маєте прав на редагування даної "
-                               "публікації")
+    if current_user.role_id != 2 and place.user_id != current_user.id:
+        abort(403, description="Ви не маєте доступу до цієї сторінки")
 
     if form.validate_on_submit():
         place.category_id = db.session.query(Category.id).filter(
@@ -73,7 +75,7 @@ def place_update(place_id):
     elif request.method == 'GET':  # якщо ми відкрили сторнку
         # для редагування, записуємо у поля форми значення з БД
         form.category.data = place.category_br.id
-        form.region.data = place.place_br.id
+        form.region.data = place.region_br.id
         form.title.data = place.title
         form.content.data = place.content
         form.coordinates.data = place.coordinates
@@ -81,11 +83,11 @@ def place_update(place_id):
                            title='Оновити публікацію', form=form)
 
 @place_bp.route('/<int:place_id>/delete', methods=["GET", "POST"])
+@login_required
 def place_delete(place_id):
     place = Place.query.get_or_404(place_id)
-    if not current_user.is_authenticated or current_user.id != place.user_id:
-        abort(403, description="Ви не маєте прав на видалення даної "
-                               "публікації")
+    if current_user.role_id != 2 and place.user_id != current_user.id:
+        abort(403, description="Ви не маєте доступу до цієї сторінки")
     try:
         db.session.delete(place)
         db.session.commit()
@@ -101,10 +103,214 @@ def region_places(region_id):
     return render_template('region_places.html',
                            title=region.name, places=places)
 
+
 @place_bp.route('/category_places/<int:category_id>/', methods=["GET", "POST"])
 def category_places(category_id):
     places = Place.query.filter_by(category_id=category_id)
     category = Category.query.get_or_404(category_id)
     return render_template('category_places.html',
                            title=category.name, places=places)
+
+
+@place_bp.route('/<int:place_id>/favourite_handle', methods=["GET", "POST"])
+@login_required
+def favourite_list_handle(place_id):
+    type_place = Type.query.filter_by(place_id=place_id,
+                                      user_id=current_user.id,
+                                      place_type='favourite').first()
+    # якщо місце не додано у список улюблених, то додаємо
+    if type_place is None:
+        type_place = Type(user_id=current_user.id, place_id=place_id,
+                          place_type='favourite')
+        try:
+            db.session.add(type_place)
+            db.session.commit()
+            flash('Місце додано до списку "Улюблені"', 'success')
+            return redirect(url_for('place_bp_in.place_view',
+                                    place_id=place_id))
+        except:
+            db.session.rollback()
+            flash('Помилка при додаванні місця до списку "Улюблені"', 'danger')
+            return redirect(url_for('place_bp_in.place_view',
+                                    place_id=place_id))
+    else: # інакше видаляємо зі списку улюблених
+        place = Place.query.get_or_404(place_id)
+        try:
+            db.session.delete(type_place)
+            db.session.commit()
+            flash('Місце видалено зі списку "Улюблені"', 'success')
+            return redirect(url_for('place_bp_in.place_view',
+                                    place_id=place.id))
+        except:
+            db.session.rollback()
+            flash('Помилка при видаленні місця зі списку "Улюблені"', 'danger')
+            return redirect(url_for('place_bp_in.place_view',
+                                    place_id=place.id))
+
+
+@place_bp.route('/<int:place_id>/visited_handle', methods=["GET", "POST"])
+@login_required
+def visited_list_handle(place_id):
+    type_place = Type.query.filter_by(place_id=place_id,
+                                      user_id=current_user.id,
+                                      place_type='visited').first()
+    # якщо місце не додано у список відвіданих, то додаємо
+    if type_place is None:
+        type_place = Type(user_id=current_user.id, place_id=place_id,
+                          place_type='visited')
+        try:
+            db.session.add(type_place)
+            db.session.commit()
+            flash('Місце додано до списку "Відвідані"', 'success')
+            return redirect(url_for('place_bp_in.place_view',
+                                    place_id=place_id))
+        except:
+            db.session.rollback()
+            flash('Помилка при додаванні місця до списку "Відвідані"', 'danger')
+            return redirect(url_for('place_bp_in.place_view',
+                                    place_id=place_id))
+    else: # інакше видаляємо зі списку відвіданих
+        place = Place.query.get_or_404(place_id)
+        try:
+            db.session.delete(type_place)
+            db.session.commit()
+            flash('Місце видалено зі списку "Відвідані"', 'success')
+            return redirect(url_for('place_bp_in.place_view',
+                                    place_id=place.id))
+        except:
+            db.session.rollback()
+            flash('Помилка при видаленні місця зі списку "Відвідані"', 'danger')
+            return redirect(url_for('place_bp_in.place_view',
+                                    place_id=place.id))
+
+
+@place_bp.route('/<int:place_id>/want_to_visit_handle', methods=["GET", "POST"])
+@login_required
+def want_to_visit_list_handle(place_id):
+    type_place = Type.query.filter_by(place_id=place_id,
+                                      user_id=current_user.id,
+                                      place_type='want to visit').first()
+    # якщо місце не додано у список 'Хочу відвідати', то додаємо
+    if type_place is None:
+        type_place = Type(user_id=current_user.id, place_id=place_id,
+                          place_type='want to visit')
+        try:
+            db.session.add(type_place)
+            db.session.commit()
+            flash('Місце додано до списку "Хочу відвідати"', 'success')
+            return redirect(url_for('place_bp_in.place_view',
+                                    place_id=place_id))
+        except:
+            db.session.rollback()
+            flash('Помилка при додаванні місця до списку "Хочу відвідати"', 'danger')
+            return redirect(url_for('place_bp_in.place_view',
+                                    place_id=place_id))
+    else: # інакше видаляємо зі списку 'хочу відвідати'
+        place = Place.query.get_or_404(place_id)
+        try:
+            db.session.delete(type_place)
+            db.session.commit()
+            flash('Місце видалено зі списку "Хочу відвідати"', 'success')
+            return redirect(url_for('place_bp_in.place_view',
+                                    place_id=place.id))
+        except:
+            db.session.rollback()
+            flash('Помилка при видаленні місця зі списку "Хочу відвідати"', 'danger')
+            return redirect(url_for('place_bp_in.place_view',
+                                    place_id=place.id))
+
+
+
+# @place_bp.route('/<int:place_id>/add_to_visited', methods=["GET", "POST"])
+# def visited_list(place_id):
+#     type_place = Type(user_id=current_user.id, place_id=place_id,
+#                       place_type='visited')
+#     try:
+#         db.session.add(type_place)
+#         db.session.commit()
+#         flash('Місце додано до списку "Відвідані"', 'success')
+#         return redirect(url_for('place_bp_in.place_view',
+#                                 place_id=place_id))
+#     except:
+#         db.session.rollback()
+#         flash('Помилка при додаванні місця до списку "Відвідані"', 'danger')
+#         return redirect(url_for('place_bp_in.place_view',
+#                                 place_id=place_id))
+#
+#
+# @place_bp.route('/<int:place_id>/add_to_want_visit', methods=["GET", "POST"])
+# def add_to_want_visit(place_id):
+#     type_place = Type(user_id=current_user.id, place_id=place_id,
+#                       place_type='want to visit')
+#     try:
+#         db.session.add(type_place)
+#         db.session.commit()
+#         flash('Місце додано до списку "Хочу відвідати"', 'success')
+#         return redirect(url_for('place_bp_in.place_view',
+#                                 place_id=place_id))
+#     except:
+#         db.session.rollback()
+#         flash('Помилка при додаванні місця до списку "Хочу відвідати"',
+#               'danger')
+#         return redirect(url_for('place_bp_in.place_view',
+#                                 place_id=place_id))
+#
+#
+# @place_bp.route('/<int:place_id>/favourite/delete', methods=["GET", "POST"])
+# @login_required
+# def delete_from_favourite(place_id):
+#     place = Place.query.get_or_404(place_id)
+#     type_place = Type.query.filter_by(place_id=place_id,
+#                                       user_id=current_user.id,
+#                                       place_type='favourite').first()
+#     try:
+#         db.session.delete(type_place)
+#         db.session.commit()
+#         flash('Місце видалено зі списку "Улюблені"', 'success')
+#         return redirect(url_for('place_bp_in.place_view',
+#                                 place_id=place.id))
+#     except:
+#         db.session.rollback()
+#         flash('Помилка при видаленні місця зі списку "Улюблені"', 'danger')
+#         return redirect(url_for('place_bp_in.place_view',
+#                                 place_id=place.id))
+#
+# @place_bp.route('/<int:place_id>/visited/delete', methods=["GET", "POST"])
+# @login_required
+# def delete_from_visited(place_id):
+#     place = Place.query.get_or_404(place_id)
+#     type_place = Type.query.filter_by(place_id=place_id,
+#                                       user_id=current_user.id,
+#                                       place_type='visited').first()
+#     try:
+#         db.session.delete(type_place)
+#         db.session.commit()
+#         flash('Місце видалено зі списку "Відвідані"', 'success')
+#         return redirect(url_for('place_bp_in.place_view',
+#                                 place_id=place.id))
+#     except:
+#         db.session.rollback()
+#         flash('Помилка при видаленні місця зі списку "Відвідані"', 'danger')
+#         return redirect(url_for('place_bp_in.place_view',
+#                                 place_id=place.id))
+#
+#
+# @place_bp.route('/<int:place_id>/want_to_visit/delete', methods=["GET", "POST"])
+# @login_required
+# def delete_from_want_to_visit(place_id):
+#     place = Place.query.get_or_404(place_id)
+#     type_place = Type.query.filter_by(place_id=place_id,
+#                                       user_id=current_user.id,
+#                                       place_type='want to visit').first()
+#     try:
+#         db.session.delete(type_place)
+#         db.session.commit()
+#         flash('Місце видалено зі списку "Хочу відвідати"', 'success')
+#         return redirect(url_for('place_bp_in.place_view',
+#                                 place_id=place.id))
+#     except:
+#         db.session.rollback()
+#         flash('Помилка при видаленні місця з списку "Хочу відвідати"', 'danger')
+#         return redirect(url_for('place_bp_in.place_view',
+#                                 place_id=place.id))
 
