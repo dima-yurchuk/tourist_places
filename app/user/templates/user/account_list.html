@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
+{% from "_render_field.html" import render_place_list %}
 {% block main %}
-{% from "_render_field.html" import render_field_lr %}
 <script>
  $(document).ready(function () {
     $(".account-menu").hover(
@@ -12,19 +12,22 @@
       }
     );
   });
-</script>
 
+
+
+</script>
 <div class="container py-5">
     <div class="row">
-        <div class="card mb-4">
-            <div class="card-body text-center">
-                <img src="{{url_for('static',filename='pictures/profile_img/' + current_user.picture)}}"
-                     alt="avatar" class="rounded-circle img-fluid"
-                     style="width: 150px;">
-                <h5 class="my-3">{{current_user.username}}</h5>
-                <p class="text-muted mb-1">{{current_user.email}}</p>
-            </div>
-            <div class="list-group">
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <img src="{{url_for('static',filename='pictures/profile_img/' + current_user.picture)}}"
+                         alt="avatar" class="rounded-circle img-fluid"
+                         style="width: 150px;">
+                    <h5 class="my-3">{{current_user.username}}</h5>
+                    <p class="text-muted mb-1">{{current_user.email}}</p>
+                </div>
+                <div class="list-group">
                 <a href="{{ url_for('user_bp_in.account_list', action='favourite') }}"
                    class="list-group-item list-group-item-action account-menu">
                     <i class="bi bi-heart">
@@ -44,8 +47,16 @@
                     </i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Редагувати профіль</a>
             </div>
 
+            </div>
         </div>
-    </div>
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    {{ render_place_list(places) }}
+                </div>
+            </div>
+
 </div>
+    </div>
 </div>
 {% endblock main %}

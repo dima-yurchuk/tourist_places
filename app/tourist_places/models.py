@@ -84,6 +84,7 @@ class Type(db.Model):
     place_id = db.Column(db.Integer, db.ForeignKey('place.id',
                                                    ondelete='RESTRICT'))
     place_type = db.Column(db.String(25), nullable=False)
+    places = db.relationship('Place', backref='type_br', lazy=True)
 
     def __repr__(self):
         return f'<Type {self.id} {self.user_id} {self.place_id} ' \

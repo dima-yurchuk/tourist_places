@@ -6,6 +6,7 @@ from . import user_bp
 from app import db
 from .forms import LoginForm, RegistrationForm
 from .models import User
+from ..tourist_places.models import Place, Type
 
 
 @user_bp.route('/login', methods=['GET', 'POST'])
@@ -62,5 +63,20 @@ def logout():
 
 
 @user_bp.route('/account')
+@login_required
 def account():
     return render_template('account.html')
+
+
+@user_bp.route('/account/<action>')
+@login_required
+def account_list(action):
+    place_types = db.session.query(Type). \
+        filter(Type.user_id == current_user.id,
+               Type.place_type == action).all()
+    place_id_list = []
+    for place_type in place_types:
+        place_id_list.append(place_type.place_id)
+    favourite_places = db.session.query(Place)\
+        .filter(Place.id.in_(place_id_list)).all()
+    return render_template('account_list.html', places=favourite_places)
