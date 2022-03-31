@@ -83,7 +83,7 @@ class Type(db.Model):
                                                   ondelete='RESTRICT'))
     place_id = db.Column(db.Integer, db.ForeignKey('place.id',
                                                    ondelete='RESTRICT'))
-    place_type = db.Column(db.String(25), unique=True, nullable=False)
+    place_type = db.Column(db.String(25), nullable=False)
 
     def __repr__(self):
         return f'<Type {self.id} {self.user_id} {self.place_id} ' \
