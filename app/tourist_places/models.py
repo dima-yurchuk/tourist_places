@@ -60,7 +60,7 @@ class Comment(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now)
 
     def __repr__(self):
-        return f'<Comment {self.id} {self.user_id} {self.post_id} ' \
+        return f'<Comment {self.id} {self.user_id} {self.place_id} ' \
                f'{self.text} >'
 
 

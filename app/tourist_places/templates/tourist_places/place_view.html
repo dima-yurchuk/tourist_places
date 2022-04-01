@@ -4,9 +4,11 @@
 <div class="card text-center" style="width:77%; margin: 0 auto;">
     <div class="card-header">
         {{place.region_br.name}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href="{{url_for('place_bp_in.favourite_list_handle', place_id=place.id)}}" id="favourite_icon" class="bi"></a>
-        <a href="{{url_for('place_bp_in.visited_list_handle', place_id=place.id)}}" id="visited_icon" class="bi"></a>
-        <a href="{{url_for('place_bp_in.want_to_visit_list_handle', place_id=place.id)}}" id="want_to_visit_icon" class="bi"></a>
+        {% if current_user.role_id==3 %}
+            <a href="{{url_for('place_bp_in.favourite_list_handle', place_id=place.id)}}" id="favourite_icon" class="bi"></a>
+            <a href="{{url_for('place_bp_in.visited_list_handle', place_id=place.id)}}" id="visited_icon" class="bi"></a>
+            <a href="{{url_for('place_bp_in.want_to_visit_list_handle', place_id=place.id)}}" id="want_to_visit_icon" class="bi"></a>
+        {% endif %}
 
         {% if current_user.is_authenticated and current_user.id == place.user_id%}
         <a href="{{url_for('place_bp_in.place_update', place_id=place.id)}}" class="btn btn-info">Редагувати</a>
@@ -14,7 +16,7 @@
         {% endif %}
 
     </div>
-    <div class="card-body">
+    <div class="card-body overflow-auto">
         <h5 class="card-title">{{place.title}}</h5>
          <p class="card-text">{{place.content|safe}}</p>
     </div>
@@ -22,7 +24,52 @@
         {{place.created_at.strftime('%d.%m.%Y')}}
     </div>
 </div>
+<div class="card text-center" style="width:77%; margin: 0 auto;">
+    <div class="card-header">
+        <h3>Коментарі</h3>
+    </div>
+    <div class="card-body overflow-auto">
+        {% if current_user.is_authenticated %}
+            <form method="post" action="{{url_for('place_bp_in.place_view', place_id=place.id)}}" enctype="multipart/form-data">
+                {{form.csrf_token}}
+                {{ form.comment }}<br>
+                {{ form.submit(class='btn btn-outline-secondary') }}
+            </form>
+        {% else %}
+            Авторизуйтесь, щоб мати можливість писати коментарі
+        {% endif %}
+    </div>
+    <div class="card-footer text-muted d-flex justify-content-center">
+        <div class="card mb-4 w-50">
+          {% for comment in comments%}
+            <div class="card-body border-top">
+                <div class="row">
+                    <div class="col-10"><h6>{{comment.text}}</h6></div>
+                    <div class="col-2">
+                        {% if comment.user_id==current_user.id %}
+                            <a href="{{url_for('place_bp_in.comment_delete', comment_id=comment.id)}}" title="Видалити коментар"><i class="bi bi-trash3-fill"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+
+
+            <div class="d-flex justify-content-between">
+              <div class="d-flex flex-row align-items-center">
+                <img src="{{url_for('static',filename='pictures/profile_img/' + comment.user_br.picture)}}" alt="avatar" width="25"
+                  height="25" />
+                <p class="small mb-0 ms-2">{{comment.user_br.username}}</p>
+              </div>
+              <div class="d-flex flex-row align-items-center">
+                <p class="small text-muted mb-0">{{comment.created_at.strftime('%H:%M %d.%m.%Y')}}</p>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+    </div>
+</div>
 <script>
+{% if current_user.is_authenticated %}
 <!--    змінюємо іконку додавання місць до списків користувача-->
     {% if not current_user.is_favourite_place(place) %}
         $(document).ready(function(){
@@ -47,5 +94,6 @@
     {% else %}
         $("#want_to_visit_icon").addClass("bi-bag-plus-fill").prop('title', 'Видалити до списку місць, які хочу відвідати');
     {% endif %}
+{% endif %}
 </script>
 {% endblock main %}
