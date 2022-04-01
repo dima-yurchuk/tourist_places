@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block main %}
+{% from "_render_field.html" import render_field_lr %}
+
+<div class="container h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+            <div class="card content-block" style="border-radius: 1rem;">
+                <div class="card-body p-5 text-center">
+                    <div class="mt-md-4">
+                        <h3 class="fw-bold mb-5 text-uppercase">
+                            Редагувати профіль</h3>
+                        <form method="post"
+                              action="{{ url_for('user_bp_in.account_update', action='main') }}"
+                              enctype="multipart/form-data">
+                            {{ form_account.csrf_token }}
+
+                            <div class="form-outline form-white mb-1">
+                                {{render_field_lr(form_account.username, placeholder="Ім'я користувача")}}
+                                <label class="form-label">Ім'я користувача</label>
+                            </div>
+                            <div class="form-outline form-white mb-1">
+                                {{render_field_lr(form_account.picture, placeholder="Фото")}}
+                                <label class="form-label">Фото</label>
+                            </div>
+
+                            {{form_account.submit(class="btn btn-success btn-lg px-5")}}
+                        </form>
+                    </div>
+<!--                    ----------------------------------------------------------    -->
+                    <hr>
+                    <div class="mt-md-4">
+                        <h3 class="fw-bold mb-5 text-uppercase">
+                            Змінити пароль</h3>
+                        <form method="post"
+                              action="{{ url_for('user_bp_in.account_update', action='password') }}"
+                              enctype="multipart/form-data">
+                            {{ form_password.csrf_token }}
+
+                            <div class="form-outline form-white mb-1">
+                                {{render_field_lr(form_password.old_password, placeholder="Старий пароль")}}
+                            </div>
+                            <div class="form-outline form-white mb-1">
+                                {{render_field_lr(form_password.password, placeholder="Пароль")}}
+                            </div>
+                            <div class="form-outline form-white mb-3">
+                                {{render_field_lr(form_password.confirm_password, placeholder="Підтвердження паролю")}}
+                            </div>
+
+                            {{form_password.submit(class="btn btn-success btn-lg px-5")}}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock main %}
