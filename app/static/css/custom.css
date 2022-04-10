@@ -10,10 +10,7 @@ body::after {
   position: absolute;
   z-index: -1;
 }
-.content-block{
-  background:rgba(255, 255, 255, 0.7);
-}
-.post-items{
+.place-items{
     border: 3px solid gray;
     background:rgba(255, 255, 255, 0);
 }
@@ -27,10 +24,4 @@ body::after {
     margin:auto;
     width:70%;
     margin-top:30px
-}
-.profile-info{
-    background: rgba(255, 255, 255, 0.5);
-}
-.account-menu{
-    background-color: #f6f9fb;
 }

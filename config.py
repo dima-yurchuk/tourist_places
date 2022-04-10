@@ -6,3 +6,9 @@ SECRET_KEY = 'supersecretkey'
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 WTF_CRSF_ENAVLED = True
 SQLALCHEMY_DATABASE_URI='sqlite:///places.db'
+
+MAIL_SERVER = 'smtp.googlemail.com'
+MAIL_PORT = 587
+MAIL_USE_TLS = True
+MAIL_USERNAME = '*****'
+MAIL_PASSWORD = '*****'

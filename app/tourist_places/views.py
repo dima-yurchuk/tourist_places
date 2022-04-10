@@ -1,6 +1,6 @@
 from flask import current_app as app, render_template, flash, redirect, \
     url_for, abort, request
-from .models import Region, Place, Category, Type, Comment
+from .models import Region, Place, Category, Type, Comment, Rating
 from . import place_bp
 from .form import FormPlaceCreate, FormPlaceUpdate, FormComment
 from app import db
@@ -128,7 +128,7 @@ def comment_delete(comment_id):
 
 @place_bp.route('/region_places/<int:region_id>/', methods=["GET", "POST"])
 def region_places(region_id):
-    places = Place.query.filter_by(region_id=region_id)
+    places = Place.query.filter_by(region_id=region_id).all()
     region = Region.query.get_or_404(region_id)
     return render_template('region_places.html',
                            title=region.name, places=places)
@@ -136,7 +136,7 @@ def region_places(region_id):
 
 @place_bp.route('/category_places/<int:category_id>/', methods=["GET", "POST"])
 def category_places(category_id):
-    places = Place.query.filter_by(category_id=category_id)
+    places = Place.query.filter_by(category_id=category_id).all()
     category = Category.query.get_or_404(category_id)
     return render_template('category_places.html',
                            title=category.name, places=places)
@@ -236,15 +236,45 @@ def want_to_visit_list_handle(place_id):
             return redirect(url_for('place_bp_in.place_view',
                                     place_id=place_id))
     else: # інакше видаляємо зі списку 'хочу відвідати'
-        place = Place.query.get_or_404(place_id)
         try:
             db.session.delete(type_place)
             db.session.commit()
             flash('Місце видалено зі списку "Хочу відвідати"', 'success')
             return redirect(url_for('place_bp_in.place_view',
-                                    place_id=place.id))
+                                    place_id=place_id))
         except:
             db.session.rollback()
             flash('Помилка при видаленні місця зі списку "Хочу відвідати"', 'danger')
             return redirect(url_for('place_bp_in.place_view',
-                                    place_id=place.id))
+                                    place_id=place_id))
+
+
+@place_bp.route('/rate/<int:mark>/<int:place_id>', methods=["GET", "POST"])
+@login_required
+def rate_place(place_id, mark):
+    rating = Rating.query.filter_by(place_id=place_id,
+                                      user_id=current_user.id).first()
+    if rating is None:
+        rating = Rating(user_id=current_user.id, place_id=place_id, mark=mark)
+        try:
+            db.session.add(rating)
+            db.session.commit()
+            return redirect(url_for('place_bp_in.place_view',
+                                    place_id=place_id))
+        except:
+            db.session.rollback()
+            flash('Помилка оцінки місця',
+                  'danger')
+            return redirect(url_for('place_bp_in.place_view',
+                                    place_id=place_id))
+    else:
+        try:
+            db.session.delete(rating)
+            db.session.commit()
+            return redirect(url_for('place_bp_in.place_view',
+                                    place_id=place_id))
+        except:
+            db.session.rollback()
+            flash('Помилка при видаленні оцінки', 'danger')
+            return redirect(url_for('place_bp_in.place_view',
+                                    place_id=place_id))

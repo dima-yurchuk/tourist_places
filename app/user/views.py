@@ -1,11 +1,12 @@
 from flask import render_template, redirect, url_for, flash, request, \
     current_app, session, jsonify
 from flask_login import login_user, current_user, logout_user, login_required
-from wtforms import ValidationError
+from flask_mail import Message
 
 from . import user_bp
-from app import db, bcrypt
-from .forms import LoginForm, RegistrationForm, AccountUpdateForm, PasswordUpdateForm
+from app import db, bcrypt, mail
+from .forms import LoginForm, RegistrationForm, AccountUpdateForm, \
+    PasswordUpdateForm, RequestResetPasswordForm, ResetPasswordForm
 from .models import User
 from ..tourist_places.models import Place, Type
 from PIL import Image
@@ -107,7 +108,7 @@ def account_update(action):
     form_password = PasswordUpdateForm()
     if request.method == 'GET':
         form_account.username.data = current_user.username
-    if action == 'main':
+    if action == 'main':# якщо ми змінюємо тільки основні дані
         if form_account.validate_on_submit():
             if form_account.picture.data:
                 picture_file = save_picture(form_account.picture.data)
@@ -126,7 +127,7 @@ def account_update(action):
                 db.session.rollback()
                 flash('Помилка при оновленні даних', 'danger')
                 return redirect(url_for('user_bp_in.account_update', action='main'))
-    if action == 'password':
+    if action == 'password': # якщо ми змінюємо пароль
         if form_password.validate_on_submit():
             print('good')
             if current_user.verify_password(form_password.old_password.data):
@@ -149,3 +150,50 @@ def account_update(action):
                                         action='password'))
     return render_template('account_update.html', form_account=form_account,
                            form_password=form_password)
+
+
+def send_mail(user):
+    token = user.get_token()
+    msg = Message('Запит скидання паролю',
+                  recipients=[user.email],
+                  sender='noreply@demo.com')
+    msg.body = f'''
+    Для відновлення паролю перейдіть за наступним посиланням:
+    {url_for('user_bp_in.reset_password', token=token, _external=True)}
+    '''
+    mail.send(msg)
+
+
+@user_bp.route('/reset_password', methods=['GET', 'POST'])
+def request_reset_password():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form_request_reset_password = RequestResetPasswordForm()
+    if form_request_reset_password.validate_on_submit():
+        user = User.query.filter_by(
+            email=form_request_reset_password.email.data).first()
+        send_mail(user)
+        flash('Лист з посиланням для відновлення паролю надіслано на вашу '
+              'пошту', 'success')
+    return render_template('request_reset_password.html',
+                    form=form_request_reset_password)
+
+
+@user_bp.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    user = User.verify_token(token)
+    if user is None:
+        flash('Посилання для зміну паролю більше не активне', 'warning')
+        return redirect(url_for('request_password_reset'))
+    form_reset_password = ResetPasswordForm()
+    if form_reset_password.validate_on_submit():
+        user.password = bcrypt.generate_password_hash(
+            form_reset_password.new_password.data).decode('utf-8')
+        try:
+            db.session.commit()
+            flash('Ваш пароль змінено!', 'success')
+        except:
+            db.session.rollback()
+            flash('Помилка зміни паролю', 'danger')
+        return redirect(url_for('user_bp_in.login'))
+    return render_template('change_password.html', form=form_reset_password)

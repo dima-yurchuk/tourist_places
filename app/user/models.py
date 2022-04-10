@@ -1,5 +1,7 @@
 from app.tourist_places.models import Comment, Place, Type, Rating, Region
 from app import db, bcrypt, login_manager
+from flask import current_app as app
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_login import UserMixin, current_user
 
 
@@ -49,8 +51,29 @@ class User(db.Model, UserMixin):  # type: ignore
                                         user_id=self.id,
                                         place_type='want to visit').first() is None
 
+
+    def is_rated_place(self, place):
+        return not Rating.query.filter_by(place_id=place.id,
+                                          user_id=self.id).first() is None
+
+    def get_mark(self, place):
+        return Rating.query.filter_by(place_id=place.id,
+                                    user_id=self.id).first().mark
     def verify_password(self, pwd):
         return bcrypt.check_password_hash(self.password, pwd)
+
+    def get_token(self, expires_sec=300):
+        serial = Serializer(app.config['SECRET_KEY'], expires_in=expires_sec)
+        return serial.dumps({'user_id': self.id}).decode('UTF-8')
+
+    @staticmethod
+    def verify_token(token):
+        serial = Serializer(app.config['SECRET_KEY'])
+        try:
+            user_id = serial.loads(token)['user_id']
+        except:
+            None
+        return User.query.get(user_id)
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"

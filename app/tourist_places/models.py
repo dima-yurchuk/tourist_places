@@ -5,6 +5,8 @@ from datetime import datetime
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 from sqlalchemy import select, func, and_
 
+import itertools
+
 
 class Category(db.Model):  # type: ignore
     id = db.Column(db.Integer, primary_key=True)  # type: ignore
@@ -45,6 +47,15 @@ class Place(db.Model):  # type: ignore
     comments = db.relationship('Comment', backref='post_br', lazy=True)
     ratings = db.relationship('Rating', backref='post_br', lazy=True)
     types = db.relationship('Type', backref='post_br', lazy=True)
+
+    def get_average_rating(self):
+        ratings = db.session.query(Rating.mark).filter(
+            Rating.place_id == self.id).all()
+        ratings_list = list(itertools.chain(*ratings))
+        if len(ratings_list) > 0:
+            return round(sum(ratings_list)/len(ratings_list), 1)
+        return 0
+
 
     def __repr__(self):
         return f'<Place {self.id} {self.title} >'

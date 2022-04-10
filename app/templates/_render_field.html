@@ -45,7 +45,7 @@
         {% endfor %}
         {%if places|length > 0%}
         {% for place in places%}
-        <div class="card text-center post-items">
+        <div class="card text-center place-items">
             <div class="card-header place-item-header">
                 <a href="{{url_for('place_bp_in.region_places', region_id=place.region_br.id)}}">{{place.region_br.name}} </a>область<br>
                 Категорія: <a

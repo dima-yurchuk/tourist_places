@@ -141,3 +141,36 @@ class PasswordUpdateForm(FlaskForm):
                     EqualTo('password', message='Паролі не збігаються!')]
     )
     submit = SubmitField('Змінити')
+
+
+class RequestResetPasswordForm(FlaskForm):
+    email = StringField("Email",
+                        validators=[DataRequired(message='Заповніть це поле!'),
+                                    Email(message='Некоректна email адреса!')]
+                        )
+    submit = SubmitField('Надіслати')
+
+    def validate_email(self, field):
+        if not User.query.filter_by(email=field.data).first():
+            raise ValidationError(
+                'Користувача з таким email не знайдено.')
+
+
+class ResetPasswordForm(FlaskForm):
+    new_password = PasswordField(
+        'Пароль',
+        validators=[Length(min=8, max=30,
+                           message='Пароль повинен бути довжиною від 8 до 30 '
+                                   'симолів!'),
+                    DataRequired(message='Заповніть це поле!'),
+                    check_letters, check_digits,
+                    check_symbols, check_spaces],
+        render_kw={"placeholder": "повинен включати велику та малу літери,"
+                                  " цифру та спецсимвол"}
+    )
+    confirm_new_password = PasswordField(
+        'Підтвердження паролю',
+        validators=[DataRequired(message='Заповніть це поле!'),
+                    EqualTo('new_password', message='Паролі не збігаються!')]
+    )
+    submit = SubmitField('Змінити')

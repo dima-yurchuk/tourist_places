@@ -14,14 +14,33 @@
         <a href="{{url_for('place_bp_in.place_update', place_id=place.id)}}" class="btn btn-info">Редагувати</a>
         <a href="{{url_for('place_bp_in.place_delete', place_id=place.id)}}" class="btn btn-danger">Видалити</a>
         {% endif %}
-
     </div>
     <div class="card-body overflow-auto">
         <h5 class="card-title">{{place.title}}</h5>
          <p class="card-text">{{place.content|safe}}</p>
     </div>
     <div class="card-footer text-muted">
-        {{place.created_at.strftime('%d.%m.%Y')}}
+        {{place.created_at.strftime('%d.%m.%Y')}}<br>
+        {% if place.get_average_rating() > 0 %}
+            <h5>Загальна оцінка місця: {{place.get_average_rating()}} / 5</h5>
+        {% else %}
+           <h5>Загальна оцінка місця: Немає оцінок даному місцю</h5>
+        {% endif %}
+        {% if current_user.role_id==3 %}
+            <div class="rating">
+                <input type="radio" name="rating" value="1" id="1">
+                <a href="{{url_for('place_bp_in.rate_place', place_id=place.id, mark=1)}}" class="rating-link bi text-decoration-none" id="star1" for="1"></a>
+                <input type="radio" name="rating" value="2" id="2">
+                <a href="{{url_for('place_bp_in.rate_place', place_id=place.id, mark=2)}}" class="rating-link bi text-decoration-none" id="star2" for="2"></a>
+                <input type="radio" name="rating" value="3" id="3">
+                <a href="{{url_for('place_bp_in.rate_place', place_id=place.id, mark=3)}}" class="rating-link bi text-decoration-none" id="star3" for="3"></a>
+                <input type="radio" name="rating" value="4" id="4">
+                <a href="{{url_for('place_bp_in.rate_place', place_id=place.id, mark=4)}}" class="rating-link bi text-decoration-none" id="star4" for="4"></a>
+                <input type="radio" name="rating" value="5" id="5">
+                <a href="{{url_for('place_bp_in.rate_place', place_id=place.id, mark=5)}}" class="rating-link bi text-decoration-none" id="star5" for="5"></a>
+            </div>
+            Оцінити місце
+        {% endif %}
     </div>
 </div>
 <div class="card text-center" style="width:77%; margin: 0 auto;">
@@ -93,6 +112,42 @@
         })
     {% else %}
         $("#want_to_visit_icon").addClass("bi-bag-plus-fill").prop('title', 'Видалити до списку місць, які хочу відвідати');
+    {% endif %}
+<!--    -------------------------------------------------------------------------------------------  -->
+     {% if not current_user.is_rated_place(place) %}
+        $(document).ready(function(){
+           $(".rating-link").addClass("bi-star");
+           for(let i = 1; i <= 5; i++){
+               $("#star"+i).hover(
+                    function(){
+                        for(let j = 1; j <= i; j++){
+                            $("#star"+j).removeClass("bi-star");
+                            $("#star"+j).addClass("bi-star-fill");
+                        }
+                    },
+                    function(){
+                        for(let j = 1; j <= i; j++){
+                            $("#star"+j).removeClass("bi-star-fill");
+                            $("#star"+j).addClass("bi-star");
+                        }
+                    },
+               )
+           }
+        })
+    {% else %}
+        let c = 0;
+        for (var i = 1; i <= {{current_user.get_mark(place)}}; i++) {
+            $("#star"+i).addClass('bi-star-fill');
+            c = i
+        }
+        for (var i = {{current_user.get_mark(place)+1}}; i <= 5; i++) {
+            $("#star"+i).addClass('bi-star');
+            $("#star"+i).css({ "pointer-events": "none",
+                "cursor": "default",
+                "text-decoration": "none",
+                 })
+            c = i
+        }
     {% endif %}
 {% endif %}
 </script>
