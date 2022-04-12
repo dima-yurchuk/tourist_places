@@ -96,9 +96,16 @@ def account_list(action):
     place_id_list = []
     for place_type in place_types:
         place_id_list.append(place_type.place_id)
-    favourite_places = db.session.query(Place) \
+    places = db.session.query(Place) \
         .filter(Place.id.in_(place_id_list)).all()
-    return render_template('account_list.html', places=favourite_places)
+    return render_template('account_list.html', places=places)
+
+
+@user_bp.route('/account/my_added_places')
+@login_required
+def account_my_added_places():
+    places = Place.query.filter_by(user_id=current_user.id).all()
+    return render_template('account_list.html', places=places)
 
 
 @user_bp.route("/account/update/<action>", methods=['GET', 'POST'])
