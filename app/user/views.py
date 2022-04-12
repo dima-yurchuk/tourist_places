@@ -90,6 +90,7 @@ def account():
 @user_bp.route('/account/<action>')
 @login_required
 def account_list(action):
+    page = request.args.get('page', 1, type=int)
     place_types = db.session.query(Type). \
         filter(Type.user_id == current_user.id,
                Type.place_type == action).all()
@@ -97,15 +98,21 @@ def account_list(action):
     for place_type in place_types:
         place_id_list.append(place_type.place_id)
     places = db.session.query(Place) \
-        .filter(Place.id.in_(place_id_list)).all()
-    return render_template('account_list.html', places=places)
+        .filter(Place.id.in_(place_id_list)).\
+        paginate(page=page, per_page=current_app.config['PLACE_IN_PAGE'])
+    # print(request.path.split('/')[-1])
+    return render_template('account_list.html', places=places, action=action)
 
 
 @user_bp.route('/account/my_added_places')
 @login_required
 def account_my_added_places():
-    places = Place.query.filter_by(user_id=current_user.id).all()
-    return render_template('account_list.html', places=places)
+    page = request.args.get('page', 1, type=int)
+    places = Place.query.filter_by(user_id=current_user.id).\
+        paginate(page=page, per_page=current_app.config['PLACE_IN_PAGE'])
+    # maybe need to change passing change
+    return render_template('account_list.html', places=places,
+                           action=request.path.split('/')[-1])
 
 
 @user_bp.route("/account/update/<action>", methods=['GET', 'POST'])

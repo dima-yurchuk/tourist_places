@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
-{% from "_render_field.html" import render_place_list %}
+{% from "_render_field.html" import render_place_list, paginate_places %}
 {% block main %}
  {{render_place_list(places)}}
+ {{paginate_places(places)}}
 {% endblock %}

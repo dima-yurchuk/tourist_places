@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from "_render_field.html" import render_place_list %}
+{% from "_render_field.html" import render_place_list, paginate_places %}
 {% block main %}
 <script>
  $(document).ready(function () {
@@ -12,6 +12,7 @@
       }
     );
   });
+
 
 
 
@@ -29,30 +30,31 @@
                 </div>
                 <div class="list-group">
                     {% if current_user.role_id==2 %}
-                        <a href="{{ url_for('user_bp_in.account_my_added_places') }}"
-                           class="list-group-item list-group-item-action account-menu">
-                            <i class="bi bi-list-stars">
-                            </i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Мої додані місця
-                        </a>
+                    <a href="{{ url_for('user_bp_in.account_my_added_places') }}"
+                       class="list-group-item list-group-item-action account-menu">
+                        <i class="bi bi-list-stars">
+                        </i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Мої додані місця
+                    </a>
                     {% endif %}
-                <a href="{{ url_for('user_bp_in.account_list', action='favourite') }}"
-                   class="list-group-item list-group-item-action account-menu">
-                    <i class="bi bi-heart">
-                    </i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Улюблені місця
-                </a>
-                <a href="{{ url_for('user_bp_in.account_list', action='visited') }}"
-                   class="list-group-item list-group-item-action account-menu">
-                    <i class="bi bi-check-square">
-                    </i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Відвідані місця</a>
-                <a href="{{ url_for('user_bp_in.account_list', action='want to visit') }}"
-                   class="list-group-item list-group-item-action account-menu">
-                    <i class="bi bi-bag-plus">
-                    </i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Хочу відвідати</a>
-                <a href="{{ url_for('user_bp_in.account_update', action='main')}}"
-                   class="list-group-item list-group-item-action account-menu">
-                    <i class="bi bi-person-bounding-box">
-                    </i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Редагувати профіль</a>
-            </div>
+                    <a href="{{ url_for('user_bp_in.account_list', action='favourite') }}"
+                       class="list-group-item list-group-item-action account-menu">
+                        <i class="bi bi-heart">
+                        </i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Улюблені місця
+                    </a>
+                    <a href="{{ url_for('user_bp_in.account_list', action='visited') }}"
+                       class="list-group-item list-group-item-action account-menu">
+                        <i class="bi bi-check-square">
+                        </i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Відвідані місця</a>
+                    <a href="{{ url_for('user_bp_in.account_list', action='want to visit') }}"
+                       class="list-group-item list-group-item-action account-menu">
+                        <i class="bi bi-bag-plus">
+                        </i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Хочу відвідати</a>
+                    <a href="{{ url_for('user_bp_in.account_update', action='main')}}"
+                       class="list-group-item list-group-item-action account-menu">
+                        <i class="bi bi-person-bounding-box">
+                        </i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Редагувати
+                        профіль</a>
+                </div>
 
             </div>
         </div>
@@ -60,10 +62,10 @@
             <div class="card mb-4">
                 <div class="card-body">
                     {{ render_place_list(places) }}
+                    {{paginate_places(places, action)}}
                 </div>
             </div>
-
-</div>
+        </div>
     </div>
 </div>
 {% endblock main %}

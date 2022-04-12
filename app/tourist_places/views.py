@@ -1,5 +1,5 @@
 from flask import current_app as app, render_template, flash, redirect, \
-    url_for, abort, request
+    url_for, abort, request, current_app
 from .models import Region, Place, Category, Type, Comment, Rating
 from . import place_bp
 from .form import FormPlaceCreate, FormPlaceUpdate, FormComment
@@ -128,7 +128,9 @@ def comment_delete(comment_id):
 
 @place_bp.route('/region_places/<int:region_id>/', methods=["GET", "POST"])
 def region_places(region_id):
-    places = Place.query.filter_by(region_id=region_id).all()
+    page = request.args.get('page', 1, type=int)
+    places = Place.query.filter_by(region_id=region_id).\
+        paginate(page=page, per_page=current_app.config['PLACE_IN_PAGE'])
     region = Region.query.get_or_404(region_id)
     return render_template('region_places.html',
                            title=region.name, places=places)
@@ -136,7 +138,9 @@ def region_places(region_id):
 
 @place_bp.route('/category_places/<int:category_id>/', methods=["GET", "POST"])
 def category_places(category_id):
-    places = Place.query.filter_by(category_id=category_id).all()
+    page = request.args.get('page', 1, type=int)
+    places = Place.query.filter_by(category_id=category_id).\
+        paginate(page=page, per_page=current_app.config['PLACE_IN_PAGE'])
     category = Category.query.get_or_404(category_id)
     return render_template('category_places.html',
                            title=category.name, places=places)

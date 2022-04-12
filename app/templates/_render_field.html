@@ -43,8 +43,8 @@
         {% for message in get_flashed_messages() %}
         <div class="flash">{{ message }}</div>
         {% endfor %}
-        {%if places|length > 0%}
-        {% for place in places%}
+        {%if places.total > 0%}
+        {% for place in places.items%}
         <div class="card text-center place-items">
             <div class="card-header place-item-header">
                 <a href="{{url_for('place_bp_in.region_places', region_id=place.region_br.id)}}">{{place.region_br.name}} </a>область<br>
@@ -62,4 +62,47 @@
         {%endif%}
 
     </div>
+{% endmacro %}
+
+
+{% macro paginate_places(places, action) %}
+{% if places.pages > 0%}
+    <nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+    {% if places.has_prev %}
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for(request.url_rule.endpoint, page=places.page-1,
+              region_id=places.items[0].region_id, category_id=places.items[0].category_id, action=action) }}" tabindex="-1">Попередня</a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <a class="page-link" href="#" tabindex="-1">Попередня</a>
+      </li>
+    {% endif %}
+    {% for page_num in places.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=3) %}
+      {% if page_num %}
+          {% if places.page == page_num %}
+              <li class="page-item active"><a class="page-link" href="{{ url_for(request.url_rule.endpoint, page=page_num,
+              region_id=places.items[0].region_id, category_id=places.items[0].category_id, action=action) }}">{{page_num}}</a></li>
+          {% else %}
+              <li class="page-item"><a class="page-link" href="{{ url_for(request.url_rule.endpoint, page=page_num,
+              region_id=places.items[0].region_id, category_id=places.items[0].category_id,  action=action) }}">{{page_num}}</a></li>
+          {% endif %}
+      {% else %}
+          <li class="page-item disabled"><a class="page-link">...</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if places.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="{{ url_for(request.url_rule.endpoint, page=places.page+1,
+              region_id=places.items[0].region_id, category_id=places.items[0].category_id, action=action) }}" tabindex="-1">Наступна</a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <a class="page-link" href="#" tabindex="-1">Наступна</a>
+      </li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
 {% endmacro %}

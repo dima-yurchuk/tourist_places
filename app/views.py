@@ -1,4 +1,4 @@
-from flask import render_template, request, current_app as app
+from flask import render_template, request, current_app as app, current_app
 from .tourist_places.models import Place, Category
 
 @app.context_processor
@@ -7,5 +7,9 @@ def inject_category():
 
 @app.route('/')
 def home():
-    places = Place.query.all()
-    return render_template('home.html', title='TorP', places=places)
+    page = request.args.get('page', 1, type=int)
+    places = Place.query.paginate(page=page,
+                                  per_page=current_app.config['PLACE_IN_PAGE'])
+    for place in places.items:
+        print(place)
+    return render_template('home.html', title='RestInUA', places=places)
