@@ -45,17 +45,30 @@
         {% endfor %}
         {%if places.total > 0%}
         {% for place in places.items%}
-        <div class="card text-center place-items">
-            <div class="card-header place-item-header">
-                <a href="{{url_for('place_bp_in.region_places', region_id=place.region_br.id)}}">{{place.region_br.name}} </a>область<br>
-                Категорія: <a
-                    href="{{url_for('place_bp_in.category_places', category_id=place.category_br.id)}}">{{place.category_br.name}}</a>
-            </div>
-            <div class="card-body place-item">
-                <a href="{{url_for('place_bp_in.place_view', place_id=place.id)}}">{{place.title}}</a>
+        <div class="card mb-3 place-items" style="max-width: 940px;">
+            <div class="row g-0">
+                 <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{{url_for('place_bp_in.place_view', place_id=place.id)}}">{{place.title}}</a>
+                        </h5>
+                        <p class="card-text"><small class="text-muted">
+                            Дата публікації місця: {{place.created_at.strftime('%d.%m.%Y')}}
+                        </small></p>
+                    </div>
+                </div>
+                <div class="col-md-4 place-item-info">
+                    <h5 class="card-title">Категорія:
+                        <a href="{{url_for('place_bp_in.category_places', category_id=place.category_br.id)}}">{{place.category_br.name}}</a>
+                    </h5>
+                    <h5 class="card-title">
+                        <a href="{{url_for('place_bp_in.region_places', region_id=place.region_br.id)}}">{{place.region_br.name}} </a>область<br>
+                    </h5>
+                    <h5 class="card-title">Середня оцінка: {{place.average_rating}}/5</h5>
+                </div>
+
             </div>
         </div>
-        <br>
         {% endfor %}
         {%else%}
         Немає доступних місць
@@ -72,7 +85,8 @@
     {% if places.has_prev %}
       <li class="page-item">
         <a class="page-link" href="{{ url_for(request.url_rule.endpoint, page=places.page-1,
-              region_id=places.items[0].region_id, category_id=places.items[0].category_id, action=action) }}" tabindex="-1">Попередня</a>
+              region_id=places.items[0].region_id, category_id=places.items[0].category_id, action=action,
+              sort_by=request.args['sort_by']) }}" tabindex="-1">Попередня</a>
       </li>
     {% else %}
       <li class="page-item disabled">
@@ -83,10 +97,12 @@
       {% if page_num %}
           {% if places.page == page_num %}
               <li class="page-item active"><a class="page-link" href="{{ url_for(request.url_rule.endpoint, page=page_num,
-              region_id=places.items[0].region_id, category_id=places.items[0].category_id, action=action) }}">{{page_num}}</a></li>
+              region_id=places.items[0].region_id, category_id=places.items[0].category_id, action=action,
+              sort_by=request.args['sort_by']) }}">{{page_num}}</a></li>
           {% else %}
               <li class="page-item"><a class="page-link" href="{{ url_for(request.url_rule.endpoint, page=page_num,
-              region_id=places.items[0].region_id, category_id=places.items[0].category_id,  action=action) }}">{{page_num}}</a></li>
+              region_id=places.items[0].region_id, category_id=places.items[0].category_id,  action=action,
+              sort_by=request.args['sort_by']) }}">{{page_num}}</a></li>
           {% endif %}
       {% else %}
           <li class="page-item disabled"><a class="page-link">...</a></li>
@@ -95,7 +111,8 @@
     {% if places.has_next %}
       <li class="page-item">
         <a class="page-link" href="{{ url_for(request.url_rule.endpoint, page=places.page+1,
-              region_id=places.items[0].region_id, category_id=places.items[0].category_id, action=action) }}" tabindex="-1">Наступна</a>
+              region_id=places.items[0].region_id, category_id=places.items[0].category_id, action=action,
+              sort_by=request.args['sort_by']) }}" tabindex="-1">Наступна</a>
       </li>
     {% else %}
       <li class="page-item disabled">
@@ -105,4 +122,25 @@
   </ul>
 </nav>
 {% endif %}
+{% endmacro %}
+
+{% macro sorting_menu(places, action) %}
+<div align="center" class="dropdown mb-1">
+  <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+    Сортувати місця
+  </a>
+
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+    <li><a class="dropdown-item" href="{{ url_for(request.url_rule.endpoint, page=places.page,
+              region_id=places.items[0].region_id, category_id=places.items[0].category_id, action=action,
+              sort_by='rating') }}">за рейтингом</a></li>
+    <li><a class="dropdown-item" href="{{ url_for(request.url_rule.endpoint, page=places.page,
+              region_id=places.items[0].region_id, category_id=places.items[0].category_id, action=action,
+              sort_by='newest') }}">за датою створення публікації(найновіші-найстаріші)</a></li>
+    <li><a class="dropdown-item" href="{{ url_for(request.url_rule.endpoint, page=places.page,
+              region_id=places.items[0].region_id, category_id=places.items[0].category_id, action=action,
+              sort_by='oldest') }}">за датою створення публікації(найстаріші-найновіші)</a></li>
+<!--    <li><a class="dropdown-item" href="#">Something else here</a></li>-->
+  </ul>
+</div>
 {% endmacro %}

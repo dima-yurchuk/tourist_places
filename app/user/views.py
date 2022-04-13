@@ -12,6 +12,8 @@ from ..tourist_places.models import Place, Type
 from PIL import Image
 import os, secrets
 
+from ..utils import handle_post_view
+
 
 def save_picture(form_picture):
     rendom_hex = secrets.token_hex(8)
@@ -90,16 +92,15 @@ def account():
 @user_bp.route('/account/<action>')
 @login_required
 def account_list(action):
-    page = request.args.get('page', 1, type=int)
     place_types = db.session.query(Type). \
         filter(Type.user_id == current_user.id,
                Type.place_type == action).all()
     place_id_list = []
     for place_type in place_types:
         place_id_list.append(place_type.place_id)
-    places = db.session.query(Place) \
-        .filter(Place.id.in_(place_id_list)).\
-        paginate(page=page, per_page=current_app.config['PLACE_IN_PAGE'])
+    places = handle_post_view(db.session.query(Place).
+                              filter(Place.id.in_(place_id_list)),
+                              request.args)
     # print(request.path.split('/')[-1])
     return render_template('account_list.html', places=places, action=action)
 

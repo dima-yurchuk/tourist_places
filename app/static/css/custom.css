@@ -11,10 +11,10 @@ body::after {
   z-index: -1;
 }
 .place-items{
-    border: 3px solid gray;
+    border: 3px solid #778899;
     background:rgba(255, 255, 255, 0);
 }
-.place-item-header{
+.place-item-info{
     background:rgba(204, 229, 255, 0.7);
 }
 .place-item{

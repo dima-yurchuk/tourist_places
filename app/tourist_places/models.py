@@ -3,8 +3,7 @@ from app import db
 from datetime import datetime
 # from flask_sqlalchemy import hybrid_property
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
-from sqlalchemy import select, func, and_
-
+from sqlalchemy import select, func, and_, case
 import itertools
 
 
@@ -48,7 +47,8 @@ class Place(db.Model):  # type: ignore
     ratings = db.relationship('Rating', backref='post_br', lazy=True)
     types = db.relationship('Type', backref='post_br', lazy=True)
 
-    def get_average_rating(self):
+    @hybrid_property
+    def average_rating(self):
         ratings = db.session.query(Rating.mark).filter(
             Rating.place_id == self.id).all()
         ratings_list = list(itertools.chain(*ratings))
@@ -56,6 +56,20 @@ class Place(db.Model):  # type: ignore
             return round(sum(ratings_list)/len(ratings_list), 1)
         return 0
 
+    @average_rating.expression
+    def average_rating(cls):
+        ratings = db.session.query(Rating.mark).filter(
+            Rating.place_id == cls.id).all()
+        ratings_list = list(itertools.chain(*ratings))
+        if len(ratings_list) > 0:
+            return select([func.sum(Rating.mark)/func.count(Rating.mark)]).where(
+                and_(Rating.place_id == cls.id)).label(
+                'average_rating')
+        else:
+            return select(
+                [func(func.sum(Rating.mark))]).where(
+                and_(Rating.place_id == cls.id)).label(
+                'average_rating')
 
     def __repr__(self):
         return f'<Place {self.id} {self.title} >'

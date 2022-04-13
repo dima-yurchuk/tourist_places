@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from "_render_field.html" import render_place_list, paginate_places %}
+{% from "_render_field.html" import render_place_list, paginate_places, sorting_menu %}
 {% block main %}
 <script>
  $(document).ready(function () {
@@ -61,6 +61,7 @@
         <div class="col-lg-8">
             <div class="card mb-4">
                 <div class="card-body">
+                    {{sorting_menu(places, action)}}
                     {{ render_place_list(places) }}
                     {{paginate_places(places, action)}}
                 </div>

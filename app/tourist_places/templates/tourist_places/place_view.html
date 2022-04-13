@@ -21,8 +21,8 @@
     </div>
     <div class="card-footer text-muted">
         {{place.created_at.strftime('%d.%m.%Y')}}<br>
-        {% if place.get_average_rating() > 0 %}
-            <h5>Загальна оцінка місця: {{place.get_average_rating()}} / 5</h5>
+        {% if place.average_rating > 0 %}
+            <h5>Загальна оцінка місця: {{place.average_rating}} / 5</h5>
         {% else %}
            <h5>Загальна оцінка місця: Немає оцінок даному місцю</h5>
         {% endif %}

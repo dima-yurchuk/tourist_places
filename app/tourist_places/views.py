@@ -5,6 +5,7 @@ from . import place_bp
 from .form import FormPlaceCreate, FormPlaceUpdate, FormComment
 from app import db
 from flask_login import current_user, login_required
+from app.utils import handle_post_view
 
 
 @app.context_processor
@@ -128,9 +129,8 @@ def comment_delete(comment_id):
 
 @place_bp.route('/region_places/<int:region_id>/', methods=["GET", "POST"])
 def region_places(region_id):
-    page = request.args.get('page', 1, type=int)
-    places = Place.query.filter_by(region_id=region_id).\
-        paginate(page=page, per_page=current_app.config['PLACE_IN_PAGE'])
+    places = handle_post_view(Place.query.filter_by(region_id=region_id),
+                              request.args)
     region = Region.query.get_or_404(region_id)
     return render_template('region_places.html',
                            title=region.name, places=places)
@@ -138,9 +138,9 @@ def region_places(region_id):
 
 @place_bp.route('/category_places/<int:category_id>/', methods=["GET", "POST"])
 def category_places(category_id):
-    page = request.args.get('page', 1, type=int)
-    places = Place.query.filter_by(category_id=category_id).\
-        paginate(page=page, per_page=current_app.config['PLACE_IN_PAGE'])
+
+    places = handle_post_view(Place.query.filter_by(category_id=category_id),
+                              request.args)
     category = Category.query.get_or_404(category_id)
     return render_template('category_places.html',
                            title=category.name, places=places)
