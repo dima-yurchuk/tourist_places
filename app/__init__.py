@@ -3,12 +3,14 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_mail import Mail
+from flask_msearch import Search
 
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
 mail = Mail()
+search = Search()
 
 def create_app(config_filename=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -18,6 +20,7 @@ def create_app(config_filename=None):
         bcrypt.init_app(app)
         login_manager.init_app(app)
         mail.init_app(app)
+        search.init_app(app)
         from .user import user_bp
         from .tourist_places import place_bp
         from .user.models import User

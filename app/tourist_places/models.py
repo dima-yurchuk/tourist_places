@@ -28,7 +28,7 @@ class Region(db.Model):
 
 
 class Place(db.Model):  # type: ignore
-
+    __searchable__ = ['title']
     id = db.Column(db.Integer, primary_key=True)
     region_id = db.Column(db.Integer, db.ForeignKey('region.id',
                                                     ondelete='RESTRICT'),

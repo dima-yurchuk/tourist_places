@@ -44,6 +44,7 @@ def place_create():
     return render_template('place_create.html', form=form,
                            title='Створити публікацію')
 
+
 @place_bp.route('/<int:place_id>', methods=["GET", "POST"])
 def place_view(place_id):
     form_comment = FormComment()
@@ -57,12 +58,14 @@ def place_view(place_id):
         try:
             db.session.add(comment)
             db.session.commit()
-            return redirect(url_for('place_bp_in.place_view', place_id=place.id))
+            return redirect(
+                url_for('place_bp_in.place_view', place_id=place.id))
         except:
             db.session.rollback()
             flash('Помилка додавання коменнтаря', 'danger')
     return render_template('place_view.html', form=form_comment, place=place,
                            comments=comments)
+
 
 @place_bp.route('/<int:place_id>/update', methods=["GET", "POST"])
 @login_required
@@ -98,6 +101,7 @@ def place_update(place_id):
     return render_template('place_update.html',
                            title='Оновити публікацію', form=form)
 
+
 @place_bp.route('/<int:place_id>/delete', methods=["GET", "POST"])
 def place_delete(place_id):
     place = Place.query.get_or_404(place_id)
@@ -110,6 +114,7 @@ def place_delete(place_id):
     except:
         flash('Помилка при видаленні публікації', 'danger')
     return redirect(url_for('home'))
+
 
 @place_bp.route('/comment/<int:comment_id>/delete')
 @login_required
@@ -138,7 +143,6 @@ def region_places(region_id):
 
 @place_bp.route('/category_places/<int:category_id>/', methods=["GET", "POST"])
 def category_places(category_id):
-
     places = handle_post_view(Place.query.filter_by(category_id=category_id),
                               request.args)
     category = Category.query.get_or_404(category_id)
@@ -167,7 +171,7 @@ def favourite_list_handle(place_id):
             flash('Помилка при додаванні місця до списку "Улюблені"', 'danger')
             return redirect(url_for('place_bp_in.place_view',
                                     place_id=place_id))
-    else: # інакше видаляємо зі списку улюблених
+    else:  # інакше видаляємо зі списку улюблених
         place = Place.query.get_or_404(place_id)
         try:
             db.session.delete(type_place)
@@ -200,10 +204,11 @@ def visited_list_handle(place_id):
                                     place_id=place_id))
         except:
             db.session.rollback()
-            flash('Помилка при додаванні місця до списку "Відвідані"', 'danger')
+            flash('Помилка при додаванні місця до списку "Відвідані"',
+                  'danger')
             return redirect(url_for('place_bp_in.place_view',
                                     place_id=place_id))
-    else: # інакше видаляємо зі списку відвіданих
+    else:  # інакше видаляємо зі списку відвіданих
         place = Place.query.get_or_404(place_id)
         try:
             db.session.delete(type_place)
@@ -213,12 +218,14 @@ def visited_list_handle(place_id):
                                     place_id=place.id))
         except:
             db.session.rollback()
-            flash('Помилка при видаленні місця зі списку "Відвідані"', 'danger')
+            flash('Помилка при видаленні місця зі списку "Відвідані"',
+                  'danger')
             return redirect(url_for('place_bp_in.place_view',
                                     place_id=place.id))
 
 
-@place_bp.route('/<int:place_id>/want_to_visit_handle', methods=["GET", "POST"])
+@place_bp.route('/<int:place_id>/want_to_visit_handle',
+                methods=["GET", "POST"])
 @login_required
 def want_to_visit_list_handle(place_id):
     type_place = Type.query.filter_by(place_id=place_id,
@@ -236,10 +243,11 @@ def want_to_visit_list_handle(place_id):
                                     place_id=place_id))
         except:
             db.session.rollback()
-            flash('Помилка при додаванні місця до списку "Хочу відвідати"', 'danger')
+            flash('Помилка при додаванні місця до списку "Хочу відвідати"',
+                  'danger')
             return redirect(url_for('place_bp_in.place_view',
                                     place_id=place_id))
-    else: # інакше видаляємо зі списку 'хочу відвідати'
+    else:  # інакше видаляємо зі списку 'хочу відвідати'
         try:
             db.session.delete(type_place)
             db.session.commit()
@@ -248,7 +256,8 @@ def want_to_visit_list_handle(place_id):
                                     place_id=place_id))
         except:
             db.session.rollback()
-            flash('Помилка при видаленні місця зі списку "Хочу відвідати"', 'danger')
+            flash('Помилка при видаленні місця зі списку "Хочу відвідати"',
+                  'danger')
             return redirect(url_for('place_bp_in.place_view',
                                     place_id=place_id))
 
@@ -257,7 +266,7 @@ def want_to_visit_list_handle(place_id):
 @login_required
 def rate_place(place_id, mark):
     rating = Rating.query.filter_by(place_id=place_id,
-                                      user_id=current_user.id).first()
+                                    user_id=current_user.id).first()
     if rating is None:
         rating = Rating(user_id=current_user.id, place_id=place_id, mark=mark)
         try:
@@ -282,3 +291,14 @@ def rate_place(place_id, mark):
             flash('Помилка при видаленні оцінки', 'danger')
             return redirect(url_for('place_bp_in.place_view',
                                     place_id=place_id))
+
+
+@place_bp.route('/search', methods=["GET"])
+def search():
+    query = request.args.get('query')
+    result_by_keywords = Place.query.msearch(query)
+    result_by_substring = Place.query.filter(Place.title.contains(f'%{query}%'))
+    places = result_by_keywords.union(result_by_substring)
+    places = handle_post_view(places,
+                              request.args)
+    return render_template('home.html', title='RestInUA', places=places)

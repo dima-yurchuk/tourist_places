@@ -76,12 +76,14 @@
                 </ul>
             </div>
             <div class="col-5">
-                         <form class="d-flex">
-                <input class="form-control me-2" type="search"
-                       placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Search
-                </button>
-            </form>
+                <form method="GET" action="{{url_for('place_bp_in.search')}}" class="d-flex" >
+                    <input class="form-control me-2" type="search"
+                           placeholder="Search" aria-label="Search"
+                           name="query">
+                    <button class="btn btn-outline-success" type="submit">
+                        Search
+                    </button>
+                </form>
             </div>
             {% if current_user.is_authenticated %}
             <div class="navbar-nav ">

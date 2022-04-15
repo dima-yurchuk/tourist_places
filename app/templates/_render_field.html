@@ -86,7 +86,7 @@
       <li class="page-item">
         <a class="page-link" href="{{ url_for(request.url_rule.endpoint, page=places.page-1,
               region_id=places.items[0].region_id, category_id=places.items[0].category_id, action=action,
-              sort_by=request.args['sort_by']) }}" tabindex="-1">Попередня</a>
+              sort_by=request.args['sort_by'], query=request.args['query']) }}" tabindex="-1">Попередня</a>
       </li>
     {% else %}
       <li class="page-item disabled">
@@ -98,11 +98,11 @@
           {% if places.page == page_num %}
               <li class="page-item active"><a class="page-link" href="{{ url_for(request.url_rule.endpoint, page=page_num,
               region_id=places.items[0].region_id, category_id=places.items[0].category_id, action=action,
-              sort_by=request.args['sort_by']) }}">{{page_num}}</a></li>
+              sort_by=request.args['sort_by'], query=request.args['query']) }}">{{page_num}}</a></li>
           {% else %}
               <li class="page-item"><a class="page-link" href="{{ url_for(request.url_rule.endpoint, page=page_num,
               region_id=places.items[0].region_id, category_id=places.items[0].category_id,  action=action,
-              sort_by=request.args['sort_by']) }}">{{page_num}}</a></li>
+              sort_by=request.args['sort_by'], query=request.args['query']) }}">{{page_num}}</a></li>
           {% endif %}
       {% else %}
           <li class="page-item disabled"><a class="page-link">...</a></li>
@@ -112,7 +112,7 @@
       <li class="page-item">
         <a class="page-link" href="{{ url_for(request.url_rule.endpoint, page=places.page+1,
               region_id=places.items[0].region_id, category_id=places.items[0].category_id, action=action,
-              sort_by=request.args['sort_by']) }}" tabindex="-1">Наступна</a>
+              sort_by=request.args['sort_by'], query=request.args['query']) }}" tabindex="-1">Наступна</a>
       </li>
     {% else %}
       <li class="page-item disabled">
@@ -133,13 +133,13 @@
   <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
     <li><a class="dropdown-item" href="{{ url_for(request.url_rule.endpoint, page=places.page,
               region_id=places.items[0].region_id, category_id=places.items[0].category_id, action=action,
-              sort_by='rating') }}">за рейтингом</a></li>
+              sort_by='rating', query=request.args['query']) }}">за рейтингом</a></li>
     <li><a class="dropdown-item" href="{{ url_for(request.url_rule.endpoint, page=places.page,
               region_id=places.items[0].region_id, category_id=places.items[0].category_id, action=action,
-              sort_by='newest') }}">за датою створення публікації(найновіші-найстаріші)</a></li>
+              sort_by='newest', query=request.args['query']) }}">за датою створення публікації(найновіші-найстаріші)</a></li>
     <li><a class="dropdown-item" href="{{ url_for(request.url_rule.endpoint, page=places.page,
               region_id=places.items[0].region_id, category_id=places.items[0].category_id, action=action,
-              sort_by='oldest') }}">за датою створення публікації(найстаріші-найновіші)</a></li>
+              sort_by='oldest', query=request.args['query']) }}">за датою створення публікації(найстаріші-найновіші)</a></li>
 <!--    <li><a class="dropdown-item" href="#">Something else here</a></li>-->
   </ul>
 </div>

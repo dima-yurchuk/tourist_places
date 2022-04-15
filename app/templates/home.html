@@ -1,7 +1,11 @@
 {% extends 'base.html' %}
 {% from "_render_field.html" import render_place_list, paginate_places, sorting_menu %}
 {% block main %}
+{%if places.total > 0%}
  {{sorting_menu(places)}}
  {{render_place_list(places)}}
  {{paginate_places(places)}}
+{% else %}
+<h3 align="center">Немає доступних місць</h3>
+{% endif %}
 {% endblock %}
