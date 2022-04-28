@@ -27,6 +27,7 @@ class User(db.Model, UserMixin):  # type: ignore
     role_id = db.Column(db.Integer, db.ForeignKey('role.id',
                                                   ondelete='RESTRICT'),
                         nullable=False)
+    activated = db.Column(db.Boolean, default=False)
 
     comment = db.relationship('Comment', backref='user_br', lazy=True)
     like = db.relationship('Rating', backref='user_br', lazy=True)
@@ -34,7 +35,8 @@ class User(db.Model, UserMixin):  # type: ignore
     place_type = db.relationship('Type', backref='user_br', lazy=True)
 
     def is_admin(self):
-        return self.admin
+        print('-----',self.role_id == 1,'-----')
+        return self.role_id == 1
 
     def is_favourite_place(self, place):
         return not Type.query.filter_by(place_id=place.id,
@@ -76,7 +78,7 @@ class User(db.Model, UserMixin):  # type: ignore
         return User.query.get(user_id)
 
     def __repr__(self):
-        return f"User('{self.username}', '{self.email}')"
+        return f"User('{self.username}', '{self.email}', '{self.activated}')"
 
 
 class Role(db.Model):

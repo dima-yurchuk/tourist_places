@@ -4,7 +4,9 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_msearch import Search
-
+from flask_admin import Admin
+from flask_migrate import Migrate
+migrate = Migrate()
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -21,13 +23,18 @@ def create_app(config_filename=None):
         login_manager.init_app(app)
         mail.init_app(app)
         search.init_app(app)
+        migrate.init_app(app, db)
+
         from .user import user_bp
         from .tourist_places import place_bp
         from .user.models import User
         from .tourist_places.models import Comment, Place, Region, Rating, Type
         app.register_blueprint(user_bp, url_prefix='/auth')
         app.register_blueprint(place_bp, url_prefix='/place')
-        db.create_all()
+
+        from .user import create_module
+        create_module(app)
+
         from app import views
         from app import forms
     return app

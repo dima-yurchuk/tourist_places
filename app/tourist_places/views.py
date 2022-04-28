@@ -16,7 +16,7 @@ def get_regions_list():
 @place_bp.route('/create', methods=['GET', 'POST'])
 @login_required
 def place_create():
-    if current_user.role_id != 2:
+    if current_user.role_id == 3:
         abort(403, description="Ви не маєте доступу до цієї сторінки")
     form = FormPlaceCreate.new()
     if form.validate_on_submit():
@@ -72,7 +72,7 @@ def place_view(place_id):
 def place_update(place_id):
     form = FormPlaceUpdate.new()
     place = Place.query.get_or_404(place_id)
-    if current_user.role_id != 2 and place.user_id != current_user.id:
+    if current_user.role_id == 3 and place.user_id != current_user.id:
         abort(403, description="Ви не маєте доступу до цієї сторінки")
 
     if form.validate_on_submit():
@@ -105,8 +105,15 @@ def place_update(place_id):
 @place_bp.route('/<int:place_id>/delete', methods=["GET", "POST"])
 def place_delete(place_id):
     place = Place.query.get_or_404(place_id)
-    if current_user.role_id != 2 and place.user_id != current_user.id:
+    if current_user.role_id == 3 and place.user_id != current_user.id:
         abort(403, description="Ви не маєте доступу до цієї сторінки")
+    comments = Comment.query.filter_by(place_id=place.id)
+    ratings = Rating.query.filter_by(place_id=place.id)
+    if comments.first() or ratings.first():
+        for comment in comments:
+            db.session.delete(comment)
+        for rating in ratings:
+            db.session.delete(rating)
     try:
         db.session.delete(place)
         db.session.commit()

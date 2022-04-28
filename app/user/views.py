@@ -11,15 +11,19 @@ from .models import User
 from ..tourist_places.models import Place, Type
 from PIL import Image
 import os, secrets
+from itsdangerous import URLSafeTimedSerializer
 
 from ..utils import handle_post_view
+
+ts = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
 
 
 def save_picture(form_picture):
     rendom_hex = secrets.token_hex(8)
     f_name, f_ext = os.path.splitext(form_picture.filename)
     picture_fn = rendom_hex + f_ext
-    picture_path = os.path.join(user_bp.root_path, '../static/pictures/profile_img',
+    picture_path = os.path.join(user_bp.root_path,
+                                '../static/pictures/profile_img',
                                 picture_fn)
     # form_picture.save(picture_path)
     # return  picture_fn
@@ -30,6 +34,18 @@ def save_picture(form_picture):
     return picture_fn
 
 
+def activate_account(email):
+    token = ts.dumps(email, salt='email-confirm')
+    msg = Message('Активувати акаунт',
+                  recipients=[email],
+                  sender='noreply@demo.com')
+    msg.body = f'''
+    Для активації акаунту перейдіть за посиланням:
+    {url_for('user_bp_in.confirm_email', token=token, _external=True)}
+    '''
+    mail.send(msg)
+
+
 @user_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -38,9 +54,13 @@ def login():
     if form.validate_on_submit():
         user_in_db = User.query.filter_by(email=form.email.data).first()
         if user_in_db:
+            if not user_in_db.activated:
+                activate_account(user_in_db.email)
+                flash('Ваш акаунт не активовано! На ваш email надіслано лист '
+                      'для активації акаунту!', 'success')
+                return redirect(url_for('user_bp_in.login'))
             if user_in_db.verify_password(form.password.data):
                 login_user(user_in_db, remember=form.remember.data)
-                print('flash')
                 flash('Користувач успішно увійшов у свій аккаунт!', 'success')
                 return redirect(url_for('user_bp_in.account'))
             else:
@@ -63,17 +83,48 @@ def register():
                     email=form.email.data,
                     password=form.password.data,
                     role_id=3)
-        print(user)
         try:
             db.session.add(user)
             db.session.commit()
-            flash(f'Користувач {form.username.data} успішно зареєстрований!',
+            activate_account(user.email)
+            flash(f'На ваш email надіслано лист для активації акаунту!',
                   'success')
         except:
             db.session.rollback()
             flash('Помилка при реєстрації!', 'danger')
         return redirect(url_for('user_bp_in.login'))
     return render_template('register.html', title='Register', form=form)
+
+
+@user_bp.route('/confirm_email/<token>')
+def confirm_email(token):
+    try:
+        email = ts.loads(token, salt='email-confirm', max_age=3600)
+        user_in_db = User.query.filter_by(email=email).first()
+        print('-----------------')
+        print(user_in_db.email)
+        print('-----------------')
+        if user_in_db:
+            user_in_db.activated = True
+            # print(user_in_db.activated)
+            try:
+                db.session.commit()
+                flash('Акаунт успішно активовано!', 'info')
+                return redirect(url_for('user_bp_in.login'))
+            except:
+                db.session.rollback()
+                flash('Помилка при активації акаунту!', 'danger')
+                return redirect(
+                    url_for('user_bp_in.login'))
+        else:
+            flash('Користувач із вказаним емейлом не зареєстрований на сайті.',
+                  'danger')
+            return redirect(
+                url_for('user_bp_in.login'))
+    except:
+        flash('Час дії токену закінчився!', 'danger')
+        return redirect(
+            url_for('user_bp_in.login'))
 
 
 @user_bp.route('/logout')
@@ -109,7 +160,7 @@ def account_list(action):
 @login_required
 def account_my_added_places():
     page = request.args.get('page', 1, type=int)
-    places = Place.query.filter_by(user_id=current_user.id).\
+    places = Place.query.filter_by(user_id=current_user.id). \
         paginate(page=page, per_page=current_app.config['PLACE_IN_PAGE'])
     # maybe need to change passing change
     return render_template('account_list.html', places=places,
@@ -123,16 +174,18 @@ def account_update(action):
     form_password = PasswordUpdateForm()
     if request.method == 'GET':
         form_account.username.data = current_user.username
-    if action == 'main':# якщо ми змінюємо тільки основні дані
+    if action == 'main':  # якщо ми змінюємо тільки основні дані
         if form_account.validate_on_submit():
             if form_account.picture.data:
                 picture_file = save_picture(form_account.picture.data)
                 current_user.picture = picture_file
             if current_user.username == form_account.username.data:
                 pass
-            elif User.query.filter_by(username=form_account.username.data).first():
+            elif User.query.filter_by(
+                    username=form_account.username.data).first():
                 flash('Користувач з таким іменем вже існує', 'danger')
-                return redirect(url_for('user_bp_in.account_update', action='main'))
+                return redirect(
+                    url_for('user_bp_in.account_update', action='main'))
             current_user.username = form_account.username.data
             try:
                 db.session.commit()
@@ -141,14 +194,15 @@ def account_update(action):
             except:
                 db.session.rollback()
                 flash('Помилка при оновленні даних', 'danger')
-                return redirect(url_for('user_bp_in.account_update', action='main'))
-    if action == 'password': # якщо ми змінюємо пароль
+                return redirect(
+                    url_for('user_bp_in.account_update', action='main'))
+    if action == 'password':  # якщо ми змінюємо пароль
         if form_password.validate_on_submit():
             print('good')
             if current_user.verify_password(form_password.old_password.data):
                 current_user.password = bcrypt.generate_password_hash(
                     form_password.
-                    password.data). \
+                        password.data). \
                     decode('utf-8')
                 try:
                     db.session.commit()
@@ -191,7 +245,7 @@ def request_reset_password():
         flash('Лист з посиланням для відновлення паролю надіслано на вашу '
               'пошту', 'success')
     return render_template('request_reset_password.html',
-                    form=form_request_reset_password)
+                           form=form_request_reset_password)
 
 
 @user_bp.route('/reset_password/<token>', methods=['GET', 'POST'])

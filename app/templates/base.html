@@ -26,8 +26,8 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light"
-     style="background-color: 	#B0C4DE;">
-    <div class="container">
+     style="background-color: #B0C4DE;">
+    <div class="container" >
         <a class="navbar-brand me-5" href="/">RestInUA 🇺🇦</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent"
@@ -50,7 +50,7 @@
                         <tr>
                             {%for j in range(0,5)%}
                             <td>
-                                <a href="{{url_for('place_bp_in.region_places', region_id=regions[5*i+j].id)}}">{{regions[5*i+j].name}}</a>
+                                <a href="{{url_for('place_bp_in.region_places', region_id=regions[5*i+j].id)}}" class="dropdown-item">{{regions[5*i+j].name}}</a>
                             </td>
                         {% endfor %}
                         </tr>
@@ -80,21 +80,24 @@
                     <input class="form-control me-2" type="search"
                            placeholder="Search" aria-label="Search"
                            name="query">
-                    <button class="btn btn-outline-success" type="submit">
-                        Search
+                    <button class="btn btn-outline-secondary" type="submit">
+                        Пошук
                     </button>
                 </form>
             </div>
             {% if current_user.is_authenticated %}
-            <div class="navbar-nav ">
-                <a class="nav-item nav-link rounded bi bi-box-arrow-in-right"
-                   href="{{url_for('user_bp_in.account')}}"> <b>Профіль</b></a>
-                <a class="nav-item nav-link rounded bi bi-person-plus-fill"
-                   href="{{url_for('user_bp_in.logout')}}"> <b>Вийти</b></a>
-                 {% if current_user.role_id==2 %}
-                     <a class="nav-item nav-link rounded bi bi-person-plus-fill"
-                       href="{{url_for('place_bp_in.place_create')}}"> <b>Додати пост</b></a>
+            <div class="navbar-nav mr-auto" >
+                <a class="nav-item nav-link rounded bi bi-person-lines-fill"
+                   href="{{url_for('user_bp_in.account')}}" style="white-space: nowrap;"> <b>Профіль</b></a>
+                 {% if current_user.role_id==2 or current_user.role_id==1%}
+                     <a class="nav-item nav-link rounded bi bi-plus-circle-dotted"
+                       href="{{url_for('place_bp_in.place_create')}}" style="white-space: nowrap;"> <b>Додати пост</b></a>
                   {% endif %}
+                <a class="nav-item nav-link rounded bi bi-box-arrow-in-left"
+                   href="{{url_for('user_bp_in.logout')}}"
+                   style="white-space: nowrap;"> <b>Вийти</b></a>
+                <a class="nav-item nav-link rounded bi bi-telephone"
+                   href="{{url_for('contacts')}}" style="white-space: nowrap;"> <b>Контакти</b></a>
             </div>
             {% else %}
             <div class="navbar-nav ">
@@ -102,8 +105,11 @@
                    href="{{url_for('user_bp_in.login')}}"> <b>Увійти</b></a>
                 <a class="nav-item nav-link rounded bi bi-person-plus-fill"
                    href="{{url_for('user_bp_in.register')}}"> <b>Зареєструватись</b></a>
+                <a class="nav-item nav-link rounded bi bi-telephone"
+                   href="{{url_for('contacts')}}"> <b>Контакти</b></a>
             </div>
             {% endif %}
+
         </div>
 
  </div>

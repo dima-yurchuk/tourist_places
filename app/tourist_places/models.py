@@ -1,5 +1,4 @@
 from app import db
-# from app.user.models import User
 from datetime import datetime
 # from flask_sqlalchemy import hybrid_property
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
@@ -33,7 +32,7 @@ class Place(db.Model):  # type: ignore
     region_id = db.Column(db.Integer, db.ForeignKey('region.id',
                                                     ondelete='RESTRICT'),
                           nullable=False)
-    user_id = db.Column(db.Integer(), db.ForeignKey('user.id',
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id',
                                                     ondelete='RESTRICT'))
     title = db.Column(db.String(120), nullable=False)
     content = db.Column(db.Text)
@@ -43,9 +42,13 @@ class Place(db.Model):  # type: ignore
                                                       ondelete='RESTRICT'),
                             nullable=False)
 
-    comments = db.relationship('Comment', backref='post_br', lazy=True)
-    ratings = db.relationship('Rating', backref='post_br', lazy=True)
-    types = db.relationship('Type', backref='post_br', lazy=True)
+    comments = db.relationship('Comment', backref='place_br', lazy=True)
+    ratings = db.relationship('Rating', backref='place_br', lazy=True)
+    types = db.relationship('Type', backref='place_br', lazy=True)
+
+    def total_comments(self):
+        return Comment.query.filter(Comment.place_id == self.id).count()
+
 
     @hybrid_property
     def average_rating(self):

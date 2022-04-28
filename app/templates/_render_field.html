@@ -19,12 +19,12 @@
   </div>
 {% endmacro %}
 
-{% macro render_editor_field(field) %}
+{% macro render_editor_field(field, placeholder) %}
   <div class="form-group" style="size:35%">
 
     {% if field.errors %}
       <div class="form-control is-invalid">
-        {{ field(class="form-control", id="editor") }}
+        {{ field(class="form-control", id="editor", placeholder=placeholder) }}
       </div>
       <div class="invalid-feedback">
         {% for error in field.errors %}
@@ -32,7 +32,7 @@
         {% endfor %}
       </div>
      {% else %}
-        {{ field(class="form-control", id="editor") }}
+        {{ field(class="form-control", id="editor", placeholder=placeholder) }}
     {% endif %}
   </div>
 {% endmacro %}
@@ -50,7 +50,7 @@
                  <div class="col-md-8">
                     <div class="card-body">
                         <h5 class="card-title">
-                            <a href="{{url_for('place_bp_in.place_view', place_id=place.id)}}">{{place.title}}</a>
+                            <a href="{{url_for('place_bp_in.place_view', place_id=place.id)}}" class="place-title">{{place.title}}</a>
                         </h5>
                         <p class="card-text"><small class="text-muted">
                             Дата публікації місця: {{place.created_at.strftime('%d.%m.%Y')}}
@@ -58,13 +58,13 @@
                     </div>
                 </div>
                 <div class="col-md-4 place-item-info">
-                    <h5 class="card-title">Категорія:
-                        <a href="{{url_for('place_bp_in.category_places', category_id=place.category_br.id)}}">{{place.category_br.name}}</a>
+                    <h5 class="card-title"><span class="place-info-title">Категорія:</span>
+                        <a href="{{url_for('place_bp_in.category_places', category_id=place.category_br.id)}}" class="place-info-content">{{place.category_br.name}}</a>
                     </h5>
                     <h5 class="card-title">
-                        <a href="{{url_for('place_bp_in.region_places', region_id=place.region_br.id)}}">{{place.region_br.name}} </a>область<br>
+                        <a href="{{url_for('place_bp_in.region_places', region_id=place.region_br.id)}}" class="place-info-content">{{place.region_br.name}} </a><span class="place-info-title">область</span><br>
                     </h5>
-                    <h5 class="card-title">Середня оцінка: {{place.average_rating}}/5</h5>
+                    <h5 class="card-title"><span class="place-info-title">Середня оцінка:</span> <span class="place-info-content">{{place.average_rating}}/5</span></h5>
                 </div>
 
             </div>
@@ -125,6 +125,7 @@
 {% endmacro %}
 
 {% macro sorting_menu(places, action) %}
+{%if places.total > 0%}
 <div align="center" class="dropdown mb-1">
   <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
     Сортувати місця
@@ -143,4 +144,5 @@
 <!--    <li><a class="dropdown-item" href="#">Something else here</a></li>-->
   </ul>
 </div>
+{% endif %}
 {% endmacro %}

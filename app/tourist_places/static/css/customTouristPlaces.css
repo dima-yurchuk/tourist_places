@@ -15,6 +15,22 @@
 .rating-link:hover{
     color: #FFD600;
 }
+.button-place{
+  background: #B0C4DE;
+}
+
+.place-view{
+    background:rgba(255, 255, 255, 0.3);
+}
+.place-view > div{
+    background:rgba(255, 255, 255, 0.7);
+}
+.place-mark{
+    color: #ffd700;
+}
+.icons{
+    font-size: 25px;
+}
 
 
 

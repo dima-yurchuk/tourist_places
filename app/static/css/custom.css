@@ -1,8 +1,9 @@
-body::after {
-  content: "";
-  background: url('/static/pictures/background.jpg');
+body {
+  background-position:center;
+  background-image: linear-gradient(rgba(255,255,255,.4), rgba(255,255,255,.4)), url('/static/pictures/background.jpg') ;
   background-size: 100%;
-  opacity: 0.4;
+  background-attachment: fixed;
+
   top: 0;
   left: 0;
   bottom: 0;
@@ -24,4 +25,39 @@ body::after {
     margin:auto;
     width:70%;
     margin-top:30px
+}
+.place-title{
+    text-decoration: none;
+    color: #708090;
+    font-weight: bold;
+}
+.place-title:hover{
+    color: #696969;
+}
+.place-info-content{
+    text-decoration: none;
+    color: #708090;
+    font-weight: bold;
+}
+.place-info-content:hover{
+    color:#696969;
+}
+.place-info-title{
+    color: #4682b4;
+    font-weight: bold;
+}
+.page-item.active .page-link{
+   background: #85C1E9;
+   border-color: #85C1E9;
+}
+.page-link{
+    color: black;
+}
+.contact-header{
+    width: 35%;
+    background:rgba(255, 255, 255, 0.7);
+    color: #4682b4;
+}
+.contact-info{
+    font-size:20px;
 }

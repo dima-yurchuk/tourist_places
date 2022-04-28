@@ -2,7 +2,7 @@
 {% block main %}
 {% from "_render_field.html" import render_field_lr, render_editor_field %}
 <div class="container form-control p-5 short-form"
-     style="background:#E8F8F5; width:70%">
+     style="background:rgba(255, 255, 255, 0.7); width:70%">
     <div class="col-md-15 col-md-offset-5">
         <h3 class="panel-title">Редагувати</h3>
         <form method="post"
@@ -16,7 +16,7 @@
                 {{render_editor_field(form.content)}}
             </div>
             {{render_field_lr(form.coordinates)}}
-            {{form.submit(class="btn mt-3 btn-lg btn-success btn-block")}}
+            {{form.submit(class="btn btn-lg px-5 button-place")}}
         </form>
 
     </div>
