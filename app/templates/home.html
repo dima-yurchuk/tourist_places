@@ -1,11 +1,59 @@
 {% extends 'base.html' %}
 {% from "_render_field.html" import render_place_list, paginate_places, sorting_menu %}
 {% block main %}
-{%if places.total > 0%}
- {{sorting_menu(places)}}
- {{render_place_list(places)}}
- {{paginate_places(places)}}
-{% else %}
-<h3 align="center">Немає доступних місць</h3>
-{% endif %}
+<div class="container py-2 ">
+    <div class="row">
+        <div class="col-lg-2" style="background: rgba(255, 255, 255, 0.4);">
+            <form method="post"
+                  action="{{url_for('place_bp_in.filter_category_region')}}">
+                <h5 align="center" class="filter-title">Області</h5>
+                {%for region in regions%}
+                <div class="ms-3" >
+                    {% if region.id in region_id_list%}
+                    <input type="checkbox" name="region"
+                           value={{region.id}} checked>&nbsp;<b class="filter-items">{{region.name}}</b>
+                    {% else %}
+                    <input type="checkbox" name="region"
+                           value={{region.id}}>&nbsp;<b class="filter-items">{{region.name}}</b>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <h5 align="center" class="filter-title">Категорії</h5>
+                {%for category in categories%}
+                <div class="ms-3">
+                    {% if category.id in category_id_list%}
+                    <input type="checkbox" name="category"
+                           value={{category.id}} checked>&nbsp;<span class="filter-items">{{category.name}}</span>
+                    {% else %}
+                    <input type="checkbox" name="category"
+                           value={{category.id}}>&nbsp;<b class="filter-items">{{category.name}}</b>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <div align="center">
+                    <input type="submit" value="Застосувати"
+                       class="btn btn-lg px-3 mb-3 button-place">
+                </div>
+            </form>
+        </div>
+        <div class="col-lg-10">
+            <div class="card mb-4"
+                 style="background: rgba(255, 255, 255, 0.4);">
+                <div class="card-body">
+                    {%if places.total > 0%}
+                    {{sorting_menu(places, action, category_id_list,
+                    region_id_list)}}
+                    {{render_place_list(places)}}
+                    {{paginate_places(places, action, category_id_list,
+                    region_id_list)}}
+                    {% else %}
+                    <h3 align="center">Немає доступних місць</h3>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 {% endblock %}

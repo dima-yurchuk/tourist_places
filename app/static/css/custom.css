@@ -61,3 +61,9 @@ body {
 .contact-info{
     font-size:20px;
 }
+.filter-title{
+    color: #4682b4;
+}
+.filter-items{
+    color: #778899;
+}

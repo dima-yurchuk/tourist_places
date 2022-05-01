@@ -138,6 +138,44 @@ def comment_delete(comment_id):
         flash('Помилка при видаленні коментаря', 'danger')
     return redirect(url_for('place_bp_in.place_view', place_id=place_id))
 
+@place_bp.route('/filter_category_region', methods=["GET", "POST"])
+def filter_category_region():
+    if request.method == 'POST':
+        category_id_list = request.form.getlist('category')
+        region_id_list = request.form.getlist('region')
+    else:
+        category_id_list = request.args.getlist('category')
+        region_id_list = request.args.getlist('region')
+    print(category_id_list)
+    print(region_id_list)
+    if category_id_list or region_id_list:
+        if category_id_list:
+            for i in range(0, len(category_id_list)):
+                category_id_list[i] = int(category_id_list[i])
+        if region_id_list:
+            for i in range(0, len(region_id_list)):
+                region_id_list[i] = int(region_id_list[i])
+        if region_id_list and not category_id_list:
+            places = handle_post_view(db.session.query(Place).filter(
+                 Place.region_id.in_(region_id_list)), request.args)
+        elif not region_id_list and category_id_list:
+            places = handle_post_view(db.session.query(Place).filter(
+                (Place.category_id.in_(category_id_list))), request.args)
+        else:
+            places = handle_post_view(db.session.query(Place).filter(
+                (Place.category_id.in_(category_id_list)) & (
+                    Place.region_id.in_(region_id_list))), request.args)
+    else:
+        places = handle_post_view(Place.query,
+                                  request.args)
+    print(category_id_list)
+    print(region_id_list)
+    # region = Region.query.get_or_404(region_id)
+    return render_template('home.html',
+                           title='region.name', places=places,
+                           category_id_list=category_id_list,
+                           region_id_list=region_id_list)
+
 
 @place_bp.route('/region_places/<int:region_id>/', methods=["GET", "POST"])
 def region_places(region_id):

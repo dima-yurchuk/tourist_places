@@ -2,7 +2,7 @@
 {% from "_render_field.html" import render_place_list, paginate_places, sorting_menu%}
 {% block main %}
   <h3 align="center">Область: {{title}}</h3>
-  {{sorting_menu(places)}}
+  {{sorting_menu(places, action, category_id_list, region_id_list)}}
   {{render_place_list(places)}}
-  {{paginate_places(places)}}
+  {{paginate_places(places, action, category_id_list, region_id_list)}}
 {% endblock %}
