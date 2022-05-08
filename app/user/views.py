@@ -14,24 +14,26 @@ import os, secrets
 from itsdangerous import URLSafeTimedSerializer
 
 from ..utils import handle_post_view
+import cloudinary.uploader
+from io import BytesIO
 
 ts = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
 
 
 def save_picture(form_picture):
-    rendom_hex = secrets.token_hex(8)
-    f_name, f_ext = os.path.splitext(form_picture.filename)
-    picture_fn = rendom_hex + f_ext
-    picture_path = os.path.join(user_bp.root_path,
-                                '../static/pictures/profile_img',
-                                picture_fn)
-    # form_picture.save(picture_path)
-    # return  picture_fn
-    output_size = (100, 100)
-    i = Image.open(form_picture)
-    i.thumbnail(output_size)
-    i.save(picture_path)
-    return picture_fn
+    output_size = (800, 800)
+    im = Image.open(form_picture)
+    im.thumbnail(output_size)
+    buf = BytesIO()
+    # зберігаємо об'єкт Image в об'єкт BytesIO
+    im.save(buf, 'png')
+    buf.seek(0)
+    image_bytes = buf.read()
+    buf.close()
+    upload_result = cloudinary.uploader.upload(
+        image_bytes, folder=current_app.config['IMG_STORAGE_FOLDER_DEV'])
+    return upload_result.get("url").split(
+        current_app.config['IMG_STORAGE_FOLDER_DEV'] + '/')[1]
 
 
 def activate_account(email):

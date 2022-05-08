@@ -7,6 +7,8 @@ SQLALCHEMY_TRACK_MODIFICATIONS = True
 WTF_CRSF_ENAVLED = True
 SQLALCHEMY_DATABASE_URI='sqlite:///places.db'
 PLACE_IN_PAGE = 3
+IMG_STORAGE_URL_DEV = 'https://res.cloudinary.com/hqnqltror/image/upload/v1652001437/pictures_dev/b6kf5zigspxssyj51cvh.png'
+IMG_STORAGE_FOLDER_DEV = 'pictures_dev'
 
 MAIL_SERVER = 'smtp.googlemail.com'
 MAIL_PORT = 587

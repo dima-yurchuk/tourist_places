@@ -6,8 +6,9 @@ from flask_mail import Mail
 from flask_msearch import Search
 from flask_admin import Admin
 from flask_migrate import Migrate
-migrate = Migrate()
+import cloudinary
 
+migrate = Migrate()
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
@@ -24,6 +25,11 @@ def create_app(config_filename=None):
         mail.init_app(app)
         search.init_app(app)
         migrate.init_app(app, db)
+        cloudinary.config(
+            cloud_name="hqnqltror",
+            api_key="142272255237789",
+            api_secret="bKxw1MTAfyzGqkgO8qrcj06vQxU"
+        )
 
         from .user import user_bp
         from .tourist_places import place_bp
