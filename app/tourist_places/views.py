@@ -6,6 +6,7 @@ from .form import FormPlaceCreate, FormPlaceUpdate, FormComment
 from app import db
 from flask_login import current_user, login_required
 from app.utils import handle_post_view
+from flask_googlemaps import Map
 
 
 @app.context_processor
@@ -53,8 +54,6 @@ def place_view(place_id):
     if form_comment.validate_on_submit() and current_user.is_authenticated:
         comment = Comment(user_id=current_user.id, place_id=place_id,
                           text=form_comment.comment.data)
-        print(comment)
-        print('dfsd')
         try:
             db.session.add(comment)
             db.session.commit()

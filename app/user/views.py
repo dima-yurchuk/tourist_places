@@ -85,6 +85,9 @@ def register():
                     email=form.email.data,
                     password=form.password.data,
                     role_id=3)
+        if form.picture.data:
+            picture_file = save_picture(form.picture.data)
+            user.picture = picture_file
         try:
             db.session.add(user)
             db.session.commit()

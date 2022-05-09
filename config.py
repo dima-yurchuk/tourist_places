@@ -7,7 +7,7 @@ SQLALCHEMY_TRACK_MODIFICATIONS = True
 WTF_CRSF_ENAVLED = True
 SQLALCHEMY_DATABASE_URI='sqlite:///places.db'
 PLACE_IN_PAGE = 3
-IMG_STORAGE_URL_DEV = 'https://res.cloudinary.com/hqnqltror/image/upload/v1652001437/pictures_dev/b6kf5zigspxssyj51cvh.png'
+IMG_STORAGE_URL_DEV = 'https://res.cloudinary.com/hqnqltror/image/upload/v1652001437/pictures_dev/'
 IMG_STORAGE_FOLDER_DEV = 'pictures_dev'
 
 MAIL_SERVER = 'smtp.googlemail.com'
@@ -15,7 +15,6 @@ MAIL_PORT = 587
 MAIL_USE_TLS = True
 MAIL_USERNAME = '*****'
 MAIL_PASSWORD = '*****'
-
 
 # flask-msearch will use table name as elasticsearch index name unless set
 # __msearch_index__

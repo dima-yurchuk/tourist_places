@@ -66,6 +66,13 @@ class RegistrationForm(FlaskForm):
         validators=[DataRequired(message='Заповніть це поле!'),
                     Email(message='Некоректна email адреса!')]
     )
+    picture = FileField('Фото профілю',
+                        validators=[
+                            FileAllowed(['jpg', 'png', 'jpeg'],
+                                        message='Файл повинен мати одне з '
+                                                'наступних розширень: '
+                                                '.jpg, .png, .jpeg'),
+                            check_file_size])
     password = PasswordField(
         'Пароль',
         validators=[Length(min=8, max=30,
