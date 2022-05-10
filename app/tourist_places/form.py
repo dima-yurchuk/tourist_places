@@ -35,12 +35,9 @@ class FormPlaceCreate(FlaskForm):
         validators=[check_text_length],
         # render_kw={'cols':35, 'rows': 5}
     )
-    coordinates = StringField(
-        "Координати",
-        validators=[Length(min=5, max=40,
-                           message='Заголовок повинен бути довжиною '
-                                   'від 5 до 120 симолів!'),
-                    DataRequired(message='Місце повинно мати координати')]
+    location = StringField(
+        "Місце розташування(посилання на гугл карти)",
+        validators=[DataRequired(message='Місце повинно мати розташування')]
     )
     submit = SubmitField('Створити')
 
@@ -90,12 +87,9 @@ class FormPlaceUpdate(FlaskForm):
         validators=[check_text_length],
         # render_kw={'cols':35, 'rows': 5}
     )
-    coordinates = StringField(
-        "Координати",
-        validators=[Length(min=5, max=40,
-                           message='Заголовок повинен бути довжиною '
-                                   'від 5 до 120 симолів!'),
-                    DataRequired(message='Місце повинно мати координати')]
+    location = StringField(
+        "Місце розташування(посилання на гугл карти)",
+        validators=[DataRequired(message='Місце повинно мати розташування')]
     )
     submit = SubmitField('Оновити')
 

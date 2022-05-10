@@ -30,7 +30,7 @@ def place_create():
                       region_id=region,
                       title=form.title.data,
                       content=form.content.data,
-                      coordinates=form.coordinates.data)
+                      location=form.location.data)
         try:
             db.session.add(place)
             db.session.commit()
@@ -81,7 +81,7 @@ def place_update(place_id):
             Region.id == form.region.data)
         place.title = form.title.data
         place.content = form.content.data
-        place.coordinates = form.coordinates.data
+        place.location = form.location.data
         try:
             db.session.commit()
             flash('Публікація успішно оновлена', 'info')
@@ -96,7 +96,7 @@ def place_update(place_id):
         form.region.data = place.region_br.id
         form.title.data = place.title
         form.content.data = place.content
-        form.coordinates.data = place.coordinates
+        form.location.data = place.location
     return render_template('place_update.html',
                            title='Оновити публікацію', form=form)
 

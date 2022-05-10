@@ -36,7 +36,7 @@ class Place(db.Model):  # type: ignore
                                                     ondelete='RESTRICT'))
     title = db.Column(db.String(120), nullable=False)
     content = db.Column(db.Text)
-    coordinates = db.Column(db.String(25), nullable=False)
+    location = db.Column(db.String(500), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id',
                                                       ondelete='RESTRICT'),
@@ -98,7 +98,7 @@ class Rating(db.Model):
                                                   ondelete='RESTRICT'))
     place_id = db.Column(db.Integer, db.ForeignKey('place.id',
                                                    ondelete='RESTRICT'))
-    mark = db.Column(db.Float)
+    mark = db.Column(db.Integer)
 
     def __repr__(self):
         return f'<Rating {self.id} {self.user_id} {self.place_id} ' \

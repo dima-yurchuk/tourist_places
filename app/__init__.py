@@ -7,6 +7,7 @@ from flask_msearch import Search
 from flask_admin import Admin
 from flask_migrate import Migrate
 import cloudinary
+import os
 
 migrate = Migrate()
 db = SQLAlchemy()
@@ -19,6 +20,18 @@ def create_app(config_filename=None):
     app = Flask(__name__, instance_relative_config=True)
     with app.app_context():
         app.config.from_object('config')
+        if os.environ.get('FLASK_ENV') == 'development':  # for local work
+            app.config.update(
+                SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL_DEV'),
+                IMG_STORAGE_URL_DEV=os.environ.get('IMG_STORAGE_URL_DEV'),
+                IMG_STORAGE_FOLDER_DEV=os.environ.get('IMG_STORAGE_FOLDER_DEV')
+            )
+        else:  # for heroku work
+            app.config.update(
+                SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL_PROD'),
+                IMG_STORAGE_URL_DEV=os.environ.get('IMG_STORAGE_URL_PROD'),
+                IMG_STORAGE_FOLDER_DEV=os.environ.get('IMG_STORAGE_FOLDER_PROD')
+            )
         db.init_app(app)
         bcrypt.init_app(app)
         login_manager.init_app(app)
