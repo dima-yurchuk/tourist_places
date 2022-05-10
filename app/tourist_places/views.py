@@ -6,7 +6,6 @@ from .form import FormPlaceCreate, FormPlaceUpdate, FormComment
 from app import db
 from flask_login import current_user, login_required
 from app.utils import handle_post_view
-from flask_googlemaps import Map
 
 
 @app.context_processor
