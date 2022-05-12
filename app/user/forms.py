@@ -96,10 +96,10 @@ class RegistrationForm(FlaskForm):
             raise ValidationError(
                 'Користувач з таким email уже зареєстрований!')
 
-    def validate_username(self, field):
-        if User.query.filter_by(username=field.data).first():
-            raise ValidationError(
-                "Користувач з таким іменем уже зареєстрований!")
+    # def validate_username(self, field):
+    #     if User.query.filter_by(username=field.data).first():
+    #         raise ValidationError(
+    #             "Користувач з таким іменем уже зареєстрований!")
 
 
 class AccountUpdateForm(FlaskForm):

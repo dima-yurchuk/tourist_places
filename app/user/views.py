@@ -1,5 +1,5 @@
 from flask import render_template, redirect, url_for, flash, request, \
-    current_app, session, jsonify
+    current_app, session, jsonify, abort
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_mail import Message
 
@@ -106,9 +106,6 @@ def confirm_email(token):
     try:
         email = ts.loads(token, salt='email-confirm', max_age=3600)
         user_in_db = User.query.filter_by(email=email).first()
-        print('-----------------')
-        print(user_in_db.email)
-        print('-----------------')
         if user_in_db:
             user_in_db.activated = True
             # print(user_in_db.activated)
@@ -143,6 +140,21 @@ def logout():
 @login_required
 def account():
     return render_template('account.html')
+
+@user_bp.route('/<int:user_id>/delete')
+@login_required
+def account_delete(user_id):
+    user = User.query.get_or_404(user_id)
+    if current_user.id != user_id:
+        abort(403, description="Ви не маєте доступу до цієї сторінки")
+    try:
+        db.session.delete(user)
+        db.session.commit()
+        logout_user()
+        flash('Акаунт успішно видалено!', 'success')
+    except:
+        flash('Помилка при видаленні акаунту', 'danger')
+    return redirect(url_for('home'))
 
 
 @user_bp.route('/account/<action>')

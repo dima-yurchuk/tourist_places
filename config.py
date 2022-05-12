@@ -13,6 +13,7 @@ MAIL_USE_TLS = True
 MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
 MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 
+
 # flask-msearch will use table name as elasticsearch index name unless set
 # __msearch_index__
 MSEARCH_INDEX_NAME = 'msearch'

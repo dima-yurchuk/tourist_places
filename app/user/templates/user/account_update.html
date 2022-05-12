@@ -49,10 +49,29 @@
 
                             {{form_password.submit(class="btn btn-lg px-5 button-auth")}}
                         </form>
+                        <a type="button" class="mt-3 delete-account" data-bs-toggle="modal" data-bs-target="#deleteModal" title="Видалити">Видалити профіль</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- confirmation of deleting the post -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Підтвердження</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Ви впевнені, що хочете видалити свій профіль?
+        </div>
+        <div class="modal-footer">
+            <a href="{{url_for('user_bp_in.account_delete', user_id=current_user.id)}}" class="btn btn-danger"> Так, видалити </a>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock main %}

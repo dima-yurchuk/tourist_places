@@ -32,6 +32,8 @@ def create_app(config_filename=None):
                 IMG_STORAGE_URL_DEV=os.environ.get('IMG_STORAGE_URL_PROD'),
                 IMG_STORAGE_FOLDER_DEV=os.environ.get('IMG_STORAGE_FOLDER_PROD')
             )
+        print('-----')
+        print(app.config['SECRET_KEY'])
         db.init_app(app)
         bcrypt.init_app(app)
         login_manager.init_app(app)

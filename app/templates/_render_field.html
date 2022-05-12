@@ -40,9 +40,6 @@
 {% macro render_place_list(places) %}
     <div align="center"
          style="margin:auto; width: 70%; ">
-        {% for message in get_flashed_messages() %}
-        <div class="flash">{{ message }}</div>
-        {% endfor %}
         {%if places.total > 0%}
         {% for place in places.items%}
         <div class="card mb-3 place-items" style="max-width: 940px;">

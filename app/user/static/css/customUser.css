@@ -10,3 +10,9 @@
 .button-auth{
   background: #B0C4DE;
 }
+.delete-account{
+    color:red;
+}
+.delete-account:hover{
+    color:#C40303;
+}

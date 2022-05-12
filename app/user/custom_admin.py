@@ -33,10 +33,10 @@ class UserModelView(ModelView):
         'user_br.name': 'Роль користувача'
     }
     form_edit_rules = (
-        'username', 'email', 'picture', 'user_br'
+        'username', 'email', 'picture', 'user_br', 'activated'
     )
     form_create_rules = (
-        'username', 'email', 'password', 'user_br'
+        'username', 'email', 'password', 'user_br', 'activated'
     )
     form_create_rules_labels = {
         'user_br': 'email'
@@ -78,9 +78,13 @@ class UserModelView(ModelView):
             comments = Comment.query.filter_by(user_id=model.id)
             ratings = Rating.query.filter_by(user_id=model.id)
             types = Type.query.filter_by(user_id=model.id)
+            users = User.query.filter_by(role_id=1)
             if posts.first():
                 flash('Ви не можете видалити цього користувача, оскільки він '
                       'є автором постів', 'danger')
+                False
+            elif users.total < 2:
+                flash('Не можливо видалити останнього адміністратора сайту!', 'danger')
                 False
             else:
                 if comments.first() or ratings.first() or types.first():
