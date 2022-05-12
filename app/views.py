@@ -21,4 +21,4 @@ def home():
 def contacts():
     category = Category(name='test')
     db.session.add(category)
-    return render_template('contacts.html', title='RestInUA')
+    return render_template('contacts.html', title='Контакти')

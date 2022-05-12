@@ -72,7 +72,7 @@ def login():
             flash('Користувач із вказаним емейлом не зареєстрований на сайті.',
                   'danger')
 
-    return render_template('login.html', form=form, title='Login')
+    return render_template('login.html', form=form, title='Вхід')
 
 
 @user_bp.route('/register', methods=['GET', 'POST'])
@@ -99,7 +99,7 @@ def register():
             flash('Помилка при реєстрації! Перевірти чи правильно введена '
                   'email адреса!', 'danger')
         return redirect(url_for('user_bp_in.login'))
-    return render_template('register.html', title='Register', form=form)
+    return render_template('register.html', title='Реєстрація', form=form)
 
 
 @user_bp.route('/confirm_email/<token>')
@@ -140,7 +140,7 @@ def logout():
 @user_bp.route('/account')
 @login_required
 def account():
-    return render_template('account.html')
+    return render_template('account.html', title='Профіль')
 
 @user_bp.route('/<int:user_id>/delete')
 @login_required
@@ -176,7 +176,8 @@ def account_list(action):
                               filter(Place.id.in_(place_id_list)),
                               request.args)
     # print(request.path.split('/')[-1])
-    return render_template('account_list.html', places=places, action=action)
+    return render_template('account_list.html', places=places, action=action,
+                           title='Профіль')
 
 
 @user_bp.route('/account/my_added_places')
@@ -187,7 +188,8 @@ def account_my_added_places():
         paginate(page=page, per_page=current_app.config['PLACE_IN_PAGE'])
     # maybe need to change passing change
     return render_template('account_list.html', places=places,
-                           action=request.path.split('/')[-1])
+                           action=request.path.split('/')[-1],
+                           title='Мої додані місця')
 
 
 @user_bp.route("/account/update/<action>", methods=['GET', 'POST'])
@@ -241,7 +243,8 @@ def account_update(action):
                 return redirect(url_for('user_bp_in.account_update',
                                         action='password'))
     return render_template('account_update.html', form_account=form_account,
-                           form_password=form_password)
+                           form_password=form_password,
+                           title='Редагування профіль')
 
 
 def send_mail(user):
@@ -268,7 +271,8 @@ def request_reset_password():
         flash('Лист з посиланням для відновлення паролю надіслано на вашу '
               'пошту', 'success')
     return render_template('request_reset_password.html',
-                           form=form_request_reset_password)
+                           form=form_request_reset_password,
+                           title='Скидання паролю')
 
 
 @user_bp.route('/reset_password/<token>', methods=['GET', 'POST'])
@@ -288,4 +292,5 @@ def reset_password(token):
             db.session.rollback()
             flash('Помилка зміни паролю', 'danger')
         return redirect(url_for('user_bp_in.login'))
-    return render_template('change_password.html', form=form_reset_password)
+    return render_template('change_password.html', form=form_reset_password,
+                           title='Зміна паролю')

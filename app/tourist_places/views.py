@@ -42,7 +42,7 @@ def place_create():
             return redirect(url_for('place_bp_in.place_create'))
 
     return render_template('place_create.html', form=form,
-                           title='Створити публікацію')
+                           title='Створення публікації')
 
 
 @place_bp.route('/<int:place_id>', methods=["GET", "POST"])
@@ -62,7 +62,7 @@ def place_view(place_id):
             db.session.rollback()
             flash('Помилка додавання коменнтаря', 'danger')
     return render_template('place_view.html', form=form_comment, place=place,
-                           comments=comments)
+                           comments=comments, title=place.title)
 
 
 @place_bp.route('/<int:place_id>/update', methods=["GET", "POST"])
@@ -97,7 +97,7 @@ def place_update(place_id):
         form.content.data = place.content
         form.location.data = place.location
     return render_template('place_update.html',
-                           title='Оновити публікацію', form=form)
+                           title='Оновлення публікації', form=form)
 
 
 @place_bp.route('/<int:place_id>/delete', methods=["GET", "POST"])
@@ -170,27 +170,27 @@ def filter_category_region():
     print(region_id_list)
     # region = Region.query.get_or_404(region_id)
     return render_template('home.html',
-                           title='region.name', places=places,
+                           title='RestInUa', places=places,
                            category_id_list=category_id_list,
                            region_id_list=region_id_list)
 
 
-@place_bp.route('/region_places/<int:region_id>/', methods=["GET", "POST"])
-def region_places(region_id):
-    places = handle_post_view(Place.query.filter_by(region_id=region_id),
-                              request.args)
-    region = Region.query.get_or_404(region_id)
-    return render_template('region_places.html',
-                           title=region.name, places=places)
-
-
-@place_bp.route('/category_places/<int:category_id>/', methods=["GET", "POST"])
-def category_places(category_id):
-    places = handle_post_view(Place.query.filter_by(category_id=category_id),
-                              request.args)
-    category = Category.query.get_or_404(category_id)
-    return render_template('category_places.html',
-                           title=category.name, places=places)
+# @place_bp.route('/region_places/<int:region_id>/', methods=["GET", "POST"])
+# def region_places(region_id):
+#     places = handle_post_view(Place.query.filter_by(region_id=region_id),
+#                               request.args)
+#     region = Region.query.get_or_404(region_id)
+#     return render_template('region_places.html',
+#                            title=region.name, places=places)
+#
+#
+# @place_bp.route('/category_places/<int:category_id>/', methods=["GET", "POST"])
+# def category_places(category_id):
+#     places = handle_post_view(Place.query.filter_by(category_id=category_id),
+#                               request.args)
+#     category = Category.query.get_or_404(category_id)
+#     return render_template('category_places.html',
+#                            title=category.name, places=places)
 
 
 @place_bp.route('/<int:place_id>/favourite_handle', methods=["GET", "POST"])
