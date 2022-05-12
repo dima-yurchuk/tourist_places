@@ -148,6 +148,11 @@ def account_delete(user_id):
     user = User.query.get_or_404(user_id)
     if current_user.id != user_id:
         abort(403, description="Ви не маєте доступу до цієї сторінки")
+    users = User.query.filter_by(role_id=1).all()
+    if user.role_id == 1 and len(users) == 1:
+        flash('Не можливо видалити останнього адміністратора сайту!',
+              'danger')
+        return redirect(url_for('home'))
     try:
         db.session.delete(user)
         db.session.commit()
