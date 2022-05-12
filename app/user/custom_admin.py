@@ -78,13 +78,14 @@ class UserModelView(ModelView):
             comments = Comment.query.filter_by(user_id=model.id)
             ratings = Rating.query.filter_by(user_id=model.id)
             types = Type.query.filter_by(user_id=model.id)
-            users = User.query.filter_by(role_id=1)
+            users = User.query.filter_by(role_id=1).all()
             if posts.first():
                 flash('Ви не можете видалити цього користувача, оскільки він '
                       'є автором постів', 'danger')
                 False
-            elif users.total < 2:
-                flash('Не можливо видалити останнього адміністратора сайту!', 'danger')
+            elif model.role_id == 1 and len(users) == 1:
+                flash('Не можливо видалити останнього адміністратора сайту!',
+                      'danger')
                 False
             else:
                 if comments.first() or ratings.first() or types.first():
@@ -145,29 +146,35 @@ class PlaceModelView(ModelView):
         # can return any valid HTML e.g. a link to another view to
         # show the detail or a popup window
         return model.content[:50]
+    def _location_formatter(view, context, model, name):
+        # Format your string here e.g show first 20 characters
+        # can return any valid HTML e.g. a link to another view to
+        # show the detail or a popup window
+        return model.location[:50]
 
     can_create = False
     column_formatters = {
         'content': _content_formatter,
+        'location': _location_formatter
     }
     column_searchable_list = ('title',)
     column_sortable_list = ('title', 'created_at', 'user_br.username',
                             'category_br.name', 'region_br.name')
     column_list = ('category_br.name', 'user_br.username', 'title', 'content',
-                   'coordinates', 'created_at',)
+                   'location', 'created_at',)
     column_labels = {
         'category_br.name': 'Категорія',
         'user_br.username': 'Користувач',
         'title': 'Заголовок',
         'content': 'Опис',
-        'coordinates': 'Координати',
+        'location': 'Розташування',
         'created_at': 'Дата створення',
     }
     form_edit_rules = (
-        'category_br', 'region_br', 'user_br', 'title', 'content', 'coordinates'
+        'category_br', 'region_br', 'user_br', 'title', 'content', 'location'
     )
     form_create_rules = (
-        'category_br', 'region_br', 'user_br', 'title', 'content', 'coordinates'
+        'category_br', 'region_br', 'user_br', 'title', 'content', 'location'
     )
     form_args = dict(
         title=dict(label='Заголовок',
@@ -178,14 +185,14 @@ class PlaceModelView(ModelView):
                                    message='Публікація '
                                            'повинна мати заголовок')]),
         content=dict(label='Опис', validators=[check_text_length]),
-        coordinates=dict(label='Координати',
+        location=dict(label='Розташування',
                          validators=[Length(min=5, max=40,
                                             message='Заголовок повинен бути '
                                                     'довжиною '
                                                     'від 5 до 120 симолів!'),
                                      DataRequired(
                                          message='Місце повинно мати'
-                                                 ' координати')]),
+                                                 ' розташування')]),
         category_br=dict(label='Категорія', validators=[DataRequired(
             message='Публікація повинна мати категорію')]),
         region_br=dict(label='Область', validators=[DataRequired(

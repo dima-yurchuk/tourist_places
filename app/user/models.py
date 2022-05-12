@@ -35,7 +35,6 @@ class User(db.Model, UserMixin):  # type: ignore
     place_type = db.relationship('Type', backref='user_br', lazy=True)
 
     def is_admin(self):
-        print('-----',self.role_id == 1,'-----')
         return self.role_id == 1
 
     def is_favourite_place(self, place):

@@ -96,7 +96,8 @@ def register():
                   'success')
         except:
             db.session.rollback()
-            flash('Помилка при реєстрації!', 'danger')
+            flash('Помилка при реєстрації! Перевірти чи правильно введена '
+                  'email адреса!', 'danger')
         return redirect(url_for('user_bp_in.login'))
     return render_template('register.html', title='Register', form=form)
 
