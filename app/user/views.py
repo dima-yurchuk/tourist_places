@@ -17,7 +17,7 @@ from ..utils import handle_post_view
 import cloudinary.uploader
 from io import BytesIO
 
-ts = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
+
 
 
 def save_picture(form_picture):
@@ -37,6 +37,7 @@ def save_picture(form_picture):
 
 
 def activate_account(email):
+    ts = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
     token = ts.dumps(email, salt='email-confirm')
     msg = Message('Активувати акаунт',
                   recipients=[email],

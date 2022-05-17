@@ -66,11 +66,11 @@ def place_view(place_id):
 
 
 @place_bp.route('/<int:place_id>/update', methods=["GET", "POST"])
-@login_required
 def place_update(place_id):
     form = FormPlaceUpdate.new()
     place = Place.query.get_or_404(place_id)
-    if current_user.role_id == 3 and place.user_id != current_user.id:
+    if not current_user.is_authenticated or \
+            (current_user.role_id == 3 and place.user_id != current_user.id):
         abort(403, description="Ви не маєте доступу до цієї сторінки")
 
     if form.validate_on_submit():
@@ -103,7 +103,8 @@ def place_update(place_id):
 @place_bp.route('/<int:place_id>/delete', methods=["GET", "POST"])
 def place_delete(place_id):
     place = Place.query.get_or_404(place_id)
-    if current_user.role_id == 3 and place.user_id != current_user.id:
+    if not current_user.is_authenticated or \
+            (current_user.role_id == 3 and place.user_id != current_user.id):
         abort(403, description="Ви не маєте доступу до цієї сторінки")
     comments = Comment.query.filter_by(place_id=place.id)
     ratings = Rating.query.filter_by(place_id=place.id)
