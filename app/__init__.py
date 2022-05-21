@@ -44,17 +44,18 @@ def create_app(config_filename=None):
         search.init_app(app)
         migrate.init_app(app, db)
         cloudinary.config(
-            cloud_name="hqnqltror",
-            api_key="142272255237789",
-            api_secret="bKxw1MTAfyzGqkgO8qrcj06vQxU"
+            cloud_name="hvl04koiz",
+            api_key="321695983177318",
+            api_secret="4Kr81Ubn3-0FCm1hrFEQgC1QvXU"
         )
 
         from .user import user_bp
         from .tourist_places import place_bp
-        from .user.models import User
+        from .user.models import User, Role
         from .tourist_places.models import Comment, Place, Region, Rating, Type
         app.register_blueprint(user_bp, url_prefix='/auth')
         app.register_blueprint(place_bp, url_prefix='/place')
+
 
         from .user import create_module
         create_module(app)

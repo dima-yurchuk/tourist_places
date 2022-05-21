@@ -128,7 +128,7 @@
 <!--    змінюємо іконку додавання місць до списків користувача-->
     {% if not current_user.is_favourite_place(place) %}
         $(document).ready(function(){
-            $("#favourite_icon").addClass("bi-heart").prop('title', 'Додади до списку улюблених місць');
+            $("#favourite_icon").addClass("bi-heart").prop('title', 'Додати до списку улюблених місць');
         })
     {% else %}
         $("#favourite_icon").addClass("bi-heart-fill").prop('title', 'Видалити зі списку улюблених місць');
@@ -136,7 +136,7 @@
 <!--    -------------------------------------------------------------------------------------------  -->
      {% if not current_user.is_visited_place(place) %}
         $(document).ready(function(){
-            $("#visited_icon").addClass("bi-check-square").prop('title', 'Додади до списку відвіданих місць');
+            $("#visited_icon").addClass("bi-check-square").prop('title', 'Додати до списку відвіданих місць');
         })
     {% else %}
         $("#visited_icon").addClass("bi-check-square-fill").prop('title', 'Видалити зі списку відвіданих місць');
@@ -144,7 +144,7 @@
 <!--    -------------------------------------------------------------------------------------------  -->
      {% if not current_user.is_want_to_visit_place(place) %}
         $(document).ready(function(){
-            $("#want_to_visit_icon").addClass("bi-bag-plus").prop('title', 'Додади до списку місць, які хочу відвідати');
+            $("#want_to_visit_icon").addClass("bi-bag-plus").prop('title', 'Додати до списку місць, які хочу відвідати');
         })
     {% else %}
         $("#want_to_visit_icon").addClass("bi-bag-plus-fill").prop('title', 'Видалити до списку місць, які хочу відвідати');
