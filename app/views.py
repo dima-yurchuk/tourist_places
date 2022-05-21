@@ -10,10 +10,7 @@ def inject_category():
 
 @app.route('/')
 def home():
-    # page = request.args.get('page', 1, type=int)
     places = handle_post_view(Place.query, request.args)
-    # places = Place.query.paginate(page=page,
-    #                               per_page=current_app.config['PLACE_IN_PAGE'])
     db.session.commit()
     return render_template('home.html', title='RestInUA', places=places)
 

@@ -30,7 +30,8 @@ def create_app(config_filename=None):
             app.config.update(
                 SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL_PROD'),
                 IMG_STORAGE_URL_DEV=os.environ.get('IMG_STORAGE_URL_PROD'),
-                IMG_STORAGE_FOLDER_DEV=os.environ.get('IMG_STORAGE_FOLDER_PROD')
+                IMG_STORAGE_FOLDER_DEV=
+                os.environ.get('IMG_STORAGE_FOLDER_PROD')
             )
         db.init_app(app)
         bcrypt.init_app(app)

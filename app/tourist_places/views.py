@@ -175,25 +175,6 @@ def filter_category_region():
                            category_id_list=category_id_list,
                            region_id_list=region_id_list)
 
-
-# @place_bp.route('/region_places/<int:region_id>/', methods=["GET", "POST"])
-# def region_places(region_id):
-#     places = handle_post_view(Place.query.filter_by(region_id=region_id),
-#                               request.args)
-#     region = Region.query.get_or_404(region_id)
-#     return render_template('region_places.html',
-#                            title=region.name, places=places)
-#
-#
-# @place_bp.route('/category_places/<int:category_id>/', methods=["GET", "POST"])
-# def category_places(category_id):
-#     places = handle_post_view(Place.query.filter_by(category_id=category_id),
-#                               request.args)
-#     category = Category.query.get_or_404(category_id)
-#     return render_template('category_places.html',
-#                            title=category.name, places=places)
-
-
 @place_bp.route('/<int:place_id>/favourite_handle', methods=["GET", "POST"])
 @login_required
 def favourite_list_handle(place_id):
@@ -341,7 +322,7 @@ def rate_place(place_id, mark):
 def search():
     query = request.args.get('query')
     result_by_keywords = Place.query.msearch(query)
-    result_by_substring = Place.query.filter(Place.title.contains(f'%{query}%'))
+    result_by_substring = Place.query.filter(Place.title.ilike(f'%{query}%'))
     places = result_by_keywords.union(result_by_substring)
     places = handle_post_view(places,
                               request.args)

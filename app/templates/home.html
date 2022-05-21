@@ -23,7 +23,7 @@
                 <div class="ms-3">
                     {% if category.id in category_id_list%}
                     <input type="checkbox" name="category"
-                           value={{category.id}} checked>&nbsp;<span class="filter-items">{{category.name}}</span>
+                           value={{category.id}} checked>&nbsp;<b class="filter-items">{{category.name}}</b>
                     {% else %}
                     <input type="checkbox" name="category"
                            value={{category.id}}>&nbsp;<b class="filter-items">{{category.name}}</b>

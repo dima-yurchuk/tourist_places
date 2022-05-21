@@ -24,7 +24,8 @@ def create_module(app, **kwargs):
         admin.add_view(UserModelView(User, db.session, name='Користувачі'))
         admin.add_view(RoleModelView(Role, db.session, name='Ролі'))
         admin.add_view(PlaceModelView(Place, db.session, name='Місця'))
-        admin.add_view(CategoryModelView(Category, db.session, name='Категорії'))
+        admin.add_view(CategoryModelView(Category, db.session,
+                                         name='Категорії'))
         admin.add_view(RegionModelView(Region, db.session, name='Області'))
         admin.add_view(CommentModelView(Comment, db.session, name='Коментарі'))
         admin.add_view(RatingModelView(Rating, db.session, name='Оцінки'))

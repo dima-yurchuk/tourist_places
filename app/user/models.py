@@ -50,7 +50,8 @@ class User(db.Model, UserMixin):  # type: ignore
     def is_want_to_visit_place(self, place):
         return not Type.query.filter_by(place_id=place.id,
                                         user_id=self.id,
-                                        place_type='want to visit').first() is None
+                                        place_type='want to visit').first()\
+                   is None
 
 
     def is_rated_place(self, place):

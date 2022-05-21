@@ -56,7 +56,8 @@ class UserModelView(ModelView):
                                Email(message='Некоректна email адреса!')]),
         password=dict(label='Пароль',
                       validators=[Length(min=8, max=30,
-                                         message='Пароль повинен бути довжиною '
+                                         message='Пароль повинен бути '
+                                                 'довжиною '
                                                  'від 8 до 30 '
                                                  'симолів!'),
                                   DataRequired(message='Заповніть це поле!'),
@@ -179,7 +180,8 @@ class PlaceModelView(ModelView):
     form_args = dict(
         title=dict(label='Заголовок',
                    validators=[Length(min=5, max=120,
-                                      message='Заголовок повинен бути довжиною '
+                                      message='Заголовок повинен бути '
+                                              'довжиною '
                                               'від 5 до 120 симолів!'),
                                DataRequired(
                                    message='Публікація '
@@ -308,7 +310,8 @@ class RegionModelView(ModelView):
 class CommentModelView(ModelView):
     can_create = False
     column_list = ('user_br.username', 'place_br.title', 'text', 'created_at')
-    column_sortable_list = ('user_br.username', 'place_br.title', 'created_at',)
+    column_sortable_list = ('user_br.username', 'place_br.title',
+                            'created_at',)
     column_labels = {
         'user_br.username': 'Користувач',
         'place_br.title': 'Пост',
@@ -323,7 +326,8 @@ class CommentModelView(ModelView):
         text=dict(label='Текст коментаря',
                   validators=[Length(
                       min=3, max=500,
-                      message='Коментар має бути довжиню від 3 до 500 символів'),
+                      message='Коментар має бути довжиню від 3 до 500 '
+                              'символів'),
                       DataRequired('Коментар не може бути пустим')]),
         created_at=dict(label='Дата створення'),
     )

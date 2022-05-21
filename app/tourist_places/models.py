@@ -65,8 +65,8 @@ class Place(db.Model):  # type: ignore
             Rating.place_id == cls.id).all()
         ratings_list = list(itertools.chain(*ratings))
         if len(ratings_list) > 0:
-            return select([func.sum(Rating.mark)/func.count(Rating.mark)]).where(
-                and_(Rating.place_id == cls.id)).label(
+            return select([func.sum(Rating.mark)/func.count(Rating.mark)]).\
+                where(and_(Rating.place_id == cls.id)).label(
                 'average_rating')
         else:
             return select(
