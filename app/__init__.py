@@ -26,12 +26,16 @@ def create_app(config_filename=None):
                 IMG_STORAGE_URL_DEV=os.environ.get('IMG_STORAGE_URL_DEV'),
                 IMG_STORAGE_FOLDER_DEV=os.environ.get('IMG_STORAGE_FOLDER_DEV')
             )
-        else:  # for heroku work
+        elif os.environ.get('FLASK_ENV') == 'production':  # for heroku work
             app.config.update(
                 SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL_PROD'),
                 IMG_STORAGE_URL_DEV=os.environ.get('IMG_STORAGE_URL_PROD'),
                 IMG_STORAGE_FOLDER_DEV=
                 os.environ.get('IMG_STORAGE_FOLDER_PROD')
+            )
+        else:
+            app.config.update(
+                SECRET_KEY='secretkeyfortesting'
             )
         db.init_app(app)
         bcrypt.init_app(app)

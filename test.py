@@ -3,11 +3,12 @@ from flask_testing import TestCase
 from app import db, create_app
 
 app = create_app()
-app.config.update(SQLALCHEMY_DATABASE_URI='sqlite:///testing.db',
-                  SECRET_KEY='secretkeyfortesting', WTF_CSRF_ENABLED=False,
-                  IMG_STORAGE_URL_DEV='https://res.cloudinary.com/hqnqltror/image/'
-                                  'upload/v1652001437/pictures_dev/',
-                  IMG_STORAGE_FOLDER_DEV='pictures_dev')
+# app.config.update(FLASK_ENV = 'testing',
+#                   SQLALCHEMY_DATABASE_URI='sqlite:///testing.db',
+#                   SECRET_KEY='secretkeyfortesting', WTF_CSRF_ENABLED=False,
+#                   IMG_STORAGE_URL_DEV='https://res.cloudinary.com/hqnqltror/image/'
+#                                   'upload/v1652001437/pictures_dev/',
+#                   IMG_STORAGE_FOLDER_DEV='pictures_dev')
 from app.user.models import User, Role
 from app.tourist_places.models import Category, Region, Place, \
     Comment, Rating, Type
@@ -17,6 +18,12 @@ from flask_login import current_user
 class BaseTestCase(TestCase):
 
     def create_app(self):
+        app.config.update(FLASK_ENV='testing',
+                          SQLALCHEMY_DATABASE_URI='sqlite:///testing.db',
+                          WTF_CSRF_ENABLED=False,
+                          IMG_STORAGE_URL_DEV='https://res.cloudinary.com/hqnqltror/image/'
+                                              'upload/v1652001437/pictures_dev/',
+                          IMG_STORAGE_FOLDER_DEV='pictures_dev')
         return app
 
     def setUp(self):
