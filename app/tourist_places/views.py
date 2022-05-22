@@ -6,6 +6,7 @@ from .form import FormPlaceCreate, FormPlaceUpdate, FormComment
 from app import db
 from flask_login import current_user, login_required
 from app.utils import handle_post_view
+from flask import jsonify
 
 
 @app.context_processor
@@ -188,27 +189,23 @@ def favourite_list_handle(place_id):
         try:
             db.session.add(type_place)
             db.session.commit()
-            flash('Місце додано до списку "Улюблені"', 'success')
-            return redirect(url_for('place_bp_in.place_view',
-                                    place_id=place_id))
+            # flash('Місце додано до списку "Улюблені"', 'success')
+            return jsonify({'added': True})
         except:
             db.session.rollback()
-            flash('Помилка при додаванні місця до списку "Улюблені"', 'danger')
-            return redirect(url_for('place_bp_in.place_view',
-                                    place_id=place_id))
+            # flash('Помилка при додаванні місця до списку "Улюблені"', 'danger')
+            return jsonify({'added': False})
     else:  # інакше видаляємо зі списку улюблених
         place = Place.query.get_or_404(place_id)
         try:
             db.session.delete(type_place)
             db.session.commit()
-            flash('Місце видалено зі списку "Улюблені"', 'success')
-            return redirect(url_for('place_bp_in.place_view',
-                                    place_id=place.id))
+            # flash('Місце видалено зі списку "Улюблені"', 'success')
+            return jsonify({'added': False})
         except:
             db.session.rollback()
-            flash('Помилка при видаленні місця зі списку "Улюблені"', 'danger')
-            return redirect(url_for('place_bp_in.place_view',
-                                    place_id=place.id))
+            # flash('Помилка при видаленні місця зі списку "Улюблені"', 'danger')
+            return jsonify({'added': True})
 
 
 @place_bp.route('/<int:place_id>/visited_handle', methods=["GET", "POST"])
@@ -224,29 +221,25 @@ def visited_list_handle(place_id):
         try:
             db.session.add(type_place)
             db.session.commit()
-            flash('Місце додано до списку "Відвідані"', 'success')
-            return redirect(url_for('place_bp_in.place_view',
-                                    place_id=place_id))
+            # flash('Місце додано до списку "Відвідані"', 'success')
+            return jsonify({'added': True})
         except:
             db.session.rollback()
-            flash('Помилка при додаванні місця до списку "Відвідані"',
-                  'danger')
-            return redirect(url_for('place_bp_in.place_view',
-                                    place_id=place_id))
+            # flash('Помилка при додаванні місця до списку "Відвідані"',
+            #       'danger')
+            return jsonify({'added': False})
     else:  # інакше видаляємо зі списку відвіданих
         place = Place.query.get_or_404(place_id)
         try:
             db.session.delete(type_place)
             db.session.commit()
-            flash('Місце видалено зі списку "Відвідані"', 'success')
-            return redirect(url_for('place_bp_in.place_view',
-                                    place_id=place.id))
+            # flash('Місце видалено зі списку "Відвідані"', 'success')
+            return jsonify({'added': False})
         except:
             db.session.rollback()
-            flash('Помилка при видаленні місця зі списку "Відвідані"',
-                  'danger')
-            return redirect(url_for('place_bp_in.place_view',
-                                    place_id=place.id))
+            # flash('Помилка при видаленні місця зі списку "Відвідані"',
+            #       'danger')
+            return jsonify({'added': True})
 
 
 @place_bp.route('/<int:place_id>/want_to_visit_handle',
@@ -263,28 +256,24 @@ def want_to_visit_list_handle(place_id):
         try:
             db.session.add(type_place)
             db.session.commit()
-            flash('Місце додано до списку "Хочу відвідати"', 'success')
-            return redirect(url_for('place_bp_in.place_view',
-                                    place_id=place_id))
+            # flash('Місце додано до списку "Хочу відвідати"', 'success')
+            return jsonify({'added': True})
         except:
             db.session.rollback()
-            flash('Помилка при додаванні місця до списку "Хочу відвідати"',
-                  'danger')
-            return redirect(url_for('place_bp_in.place_view',
-                                    place_id=place_id))
+            # flash('Помилка при додаванні місця до списку "Хочу відвідати"',
+            #       'danger')
+            return jsonify({'added': False})
     else:  # інакше видаляємо зі списку 'хочу відвідати'
         try:
             db.session.delete(type_place)
             db.session.commit()
-            flash('Місце видалено зі списку "Хочу відвідати"', 'success')
-            return redirect(url_for('place_bp_in.place_view',
-                                    place_id=place_id))
+            # flash('Місце видалено зі списку "Хочу відвідати"', 'success')
+            return jsonify({'added': False})
         except:
             db.session.rollback()
-            flash('Помилка при видаленні місця зі списку "Хочу відвідати"',
-                  'danger')
-            return redirect(url_for('place_bp_in.place_view',
-                                    place_id=place_id))
+            # flash('Помилка при видаленні місця зі списку "Хочу відвідати"',
+            #       'danger')
+            return jsonify({'added': True})
 
 
 @place_bp.route('/rate/<int:mark>/<int:place_id>', methods=["GET", "POST"])

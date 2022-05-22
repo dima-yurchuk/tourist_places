@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block main %}
 {% from "_render_field.html" import render_field_lr %}
+<script src=""></script>
 <div class="card text-center place-view" style="width:77%; margin: 0 auto;">
     <div class="card-header">
 <!--         <div class="d-flex justify-content-between">-->
@@ -10,9 +11,9 @@
 
         <span style="font-size:25px;">{{place.region_br.name}} область</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         {% if current_user.is_authenticated %}
-            <a href="{{url_for('place_bp_in.favourite_list_handle', place_id=place.id)}}" id="favourite_icon" class="bi icons"></a>
-            <a href="{{url_for('place_bp_in.visited_list_handle', place_id=place.id)}}" id="visited_icon" class="bi icons"></a>
-            <a href="{{url_for('place_bp_in.want_to_visit_list_handle', place_id=place.id)}}" id="want_to_visit_icon" class="bi icons"></a>
+            <a id="favourite_icon" class="bi icons"></a>
+            <a id="visited_icon" class="visited bi icons"></a>
+            <a id="want_to_visit_icon" class="bi icons"></a>
 
         {% endif %}
 
@@ -124,34 +125,91 @@
     </div>
   </div>
 <script>
+
+$(document).ready(function(){
+    $('#favourite_icon').click(function(){
+        $.ajax({
+            url: '{{url_for('place_bp_in.favourite_list_handle', place_id=place.id)}}',
+            type: 'post',
+            contentType: 'application/json',
+            data: {
+            place_id: {{place.id}}
+            },
+            success: function(response){
+              if (response.added){
+                  $("#favourite_icon").removeClass("bi-heart");
+                  $("#favourite_icon").addClass("bi-heart-fill").prop('title', 'Видалити зі списку улюблених місць');
+              }
+              else{
+                  $("#favourite_icon").removeClass("bi-heart-fill");
+                  $("#favourite_icon").addClass("bi-heart").prop('title', 'Додати до списку улюблених місць');
+              }
+            }
+        })
+    })
+    $('#visited_icon').click(function(){
+        $.ajax({
+            url: '{{url_for('place_bp_in.visited_list_handle', place_id=place.id)}}',
+            type: 'post',
+            contentType: 'application/json',
+            data: {
+            place_id: {{place.id}}
+            },
+            success: function(response){
+              if (response.added){
+                  $("#visited_icon").removeClass("bi-check-square");
+                  $("#visited_icon").addClass("bi-check-square-fill").prop('title', 'Видалити зі списку відвіданих місць');
+              }
+              else{
+                  $("#visited_icon").removeClass("bi-check-square-fill");
+                  $("#visited_icon").addClass("bi-check-square").prop('title', 'Додати до списку відвіданих місць');
+              }
+            }
+        })
+    })
+    $('#want_to_visit_icon').click(function(){
+        $.ajax({
+            url: '{{url_for('place_bp_in.want_to_visit_list_handle', place_id=place.id)}}',
+            type: 'post',
+            contentType: 'application/json',
+            data: {
+            place_id: {{place.id}}
+            },
+            success: function(response){
+              if (response.added){
+                  $("#want_to_visit_icon").removeClass("bi-bag-plus");
+                  $("#want_to_visit_icon").addClass("bi-bag-plus-fill").prop('title', 'Видалити до списку місць, які хочу відвідати');
+              }
+              else{
+                  $("#want_to_visit_icon").removeClass("bi-bag-plus-fill");
+                  $("#want_to_visit_icon").addClass("bi-bag-plus").prop('title', 'Додати до списку місць, які хочу відвідати');
+              }
+            }
+        })
+    })
+})
+
 {% if current_user.is_authenticated %}
 <!--    змінюємо іконку додавання місць до списків користувача-->
     {% if not current_user.is_favourite_place(place) %}
-        $(document).ready(function(){
-            $("#favourite_icon").addClass("bi-heart").prop('title', 'Додати до списку улюблених місць');
-        })
+        $("#favourite_icon").addClass("bi-heart").prop('title', 'Додати до списку улюблених місць');
     {% else %}
         $("#favourite_icon").addClass("bi-heart-fill").prop('title', 'Видалити зі списку улюблених місць');
     {% endif %}
 <!--    -------------------------------------------------------------------------------------------  -->
      {% if not current_user.is_visited_place(place) %}
-        $(document).ready(function(){
-            $("#visited_icon").addClass("bi-check-square").prop('title', 'Додати до списку відвіданих місць');
-        })
+        $("#visited_icon").addClass("bi-check-square").prop('title', 'Додати до списку відвіданих місць');
     {% else %}
         $("#visited_icon").addClass("bi-check-square-fill").prop('title', 'Видалити зі списку відвіданих місць');
     {% endif %}
 <!--    -------------------------------------------------------------------------------------------  -->
      {% if not current_user.is_want_to_visit_place(place) %}
-        $(document).ready(function(){
-            $("#want_to_visit_icon").addClass("bi-bag-plus").prop('title', 'Додати до списку місць, які хочу відвідати');
-        })
+        $("#want_to_visit_icon").addClass("bi-bag-plus").prop('title', 'Додати до списку місць, які хочу відвідати');
     {% else %}
         $("#want_to_visit_icon").addClass("bi-bag-plus-fill").prop('title', 'Видалити до списку місць, які хочу відвідати');
     {% endif %}
 <!--    -------------------------------------------------------------------------------------------  -->
      {% if not current_user.is_rated_place(place) %}
-        $(document).ready(function(){
            $(".rating-link").addClass("bi-star");
            for(let i = 1; i <= 5; i++){
                $("#star"+i).hover(
@@ -169,12 +227,9 @@
                     },
                )
            }
-        })
     {% else %}
-        let c = 0;
         for (var i = 1; i <= {{current_user.get_mark(place)}}; i++) {
             $("#star"+i).addClass('bi-star-fill');
-            c = i
         }
         for (var i = {{current_user.get_mark(place)+1}}; i <= 5; i++) {
             $("#star"+i).addClass('bi-star');
@@ -182,7 +237,6 @@
                 "cursor": "default",
                 "text-decoration": "none",
                  })
-            c = i
         }
     {% endif %}
 {% endif %}
