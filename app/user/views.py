@@ -152,6 +152,10 @@ def account_delete(user_id):
         flash('Не можливо видалити останнього адміністратора сайту!',
               'danger')
         return redirect(url_for('home'))
+    elif user.email == 'userforpost7651@gmail.com':
+        flash('Не можливо видалити даного користувача!',
+              'danger')
+        return redirect(url_for('home'))
     try:
         db.session.delete(user)
         db.session.commit()

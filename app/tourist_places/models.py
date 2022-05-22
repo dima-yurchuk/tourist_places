@@ -55,8 +55,10 @@ class Place(db.Model):  # type: ignore
         ratings = db.session.query(Rating.mark).filter(
             Rating.place_id == self.id).all()
         ratings_list = list(itertools.chain(*ratings))
-        if len(ratings_list) > 0:
-            return round(sum(ratings_list)/len(ratings_list), 1)
+        if len(ratings_list) > 1:
+            return round(sum(ratings_list)/(len(ratings_list) - 1), 1)
+        elif len(ratings_list) == 1 and ratings_list[0] == 0:
+            return 0
         return 0
 
     @average_rating.expression

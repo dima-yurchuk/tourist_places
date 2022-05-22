@@ -88,6 +88,9 @@ class UserModelView(ModelView):
                 flash('Не можливо видалити останнього адміністратора сайту!',
                       'danger')
                 False
+            elif model.email == 'userforpost7651@gmail.com':
+                flash('Не можливо видалити даного користувача!',
+                      'danger')
             else:
                 if comments.first() or ratings.first() or types.first():
                     for comment in comments:
@@ -147,6 +150,7 @@ class PlaceModelView(ModelView):
         # can return any valid HTML e.g. a link to another view to
         # show the detail or a popup window
         return model.content[:50]
+
     def _location_formatter(view, context, model, name):
         # Format your string here e.g show first 20 characters
         # can return any valid HTML e.g. a link to another view to
@@ -188,13 +192,13 @@ class PlaceModelView(ModelView):
                                            'повинна мати заголовок')]),
         content=dict(label='Опис', validators=[check_text_length]),
         location=dict(label='Розташування',
-                         validators=[Length(min=5, max=40,
-                                            message='Заголовок повинен бути '
-                                                    'довжиною '
-                                                    'від 5 до 120 симолів!'),
-                                     DataRequired(
-                                         message='Місце повинно мати'
-                                                 ' розташування')]),
+                      validators=[Length(min=5, max=40,
+                                         message='Заголовок повинен бути '
+                                                 'довжиною '
+                                                 'від 5 до 120 симолів!'),
+                                  DataRequired(
+                                      message='Місце повинно мати'
+                                              ' розташування')]),
         category_br=dict(label='Категорія', validators=[DataRequired(
             message='Публікація повинна мати категорію')]),
         region_br=dict(label='Область', validators=[DataRequired(
@@ -214,20 +218,19 @@ class PlaceModelView(ModelView):
 
     def delete_model(self, model):
         try:
-            comments = Comment.query.filter_by(post_id=model.id)
-            ratings = Rating.query.filter_by(post_id=model.id)
-            if comments.first() or ratings.first():
+            comments = Comment.query.filter_by(user_id=model.id)
+            ratings = Rating.query.filter_by(user_id=model.id)
+            types = Type.query.filter_by(user_id=model.id)
+            if comments.first() or ratings.first() or types.first():
                 for comment in comments:
                     db.session.delete(comment)
                 for rating in ratings:
                     db.session.delete(rating)
-                self.session.delete(model)
-                self.session.commit()
-                return True
-            else:
-                self.session.delete(model)
-                self.session.commit()
-                return True
+                for type in types:
+                    db.session.delete(type)
+            self.session.delete(model)
+            self.session.commit()
+            return True
         except:
             self.session.rollback()
             return False

@@ -38,9 +38,9 @@ class FormPlaceCreate(FlaskForm):
     location = StringField(
         "Місце розташування(посилання на гугл карти)",
         validators=[DataRequired(message='Місце повинно мати розташування'),
-                    Regexp('^https://www.google.com/maps/place.*$', 0,
+                    Regexp('^https://www.google.com/maps/.*$', 0,
                            "Повинно міститися посилання на google maps"
-                           "(https://www.google.com/maps/place/...)")
+                           "(https://www.google.com/maps/...)")
                     ]
     )
     submit = SubmitField('Створити')
@@ -94,9 +94,9 @@ class FormPlaceUpdate(FlaskForm):
     location = StringField(
         "Місце розташування(посилання на гугл карти)",
         validators=[DataRequired(message='Місце повинно мати розташування'),
-                    Regexp('^https://www.google.com/maps/place.*$', 0,
+                    Regexp('^https://www.google.com/maps/.*$', 0,
                            "Повинно міститися посилання на google maps"
-                           "(https://www.google.com/maps/place/...)")
+                           "(https://www.google.com/maps/...)")
                     ]
     )
     submit = SubmitField('Оновити')

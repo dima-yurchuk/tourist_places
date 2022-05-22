@@ -34,6 +34,9 @@ def place_create():
         try:
             db.session.add(place)
             db.session.commit()
+            rating = Rating(user_id=2, place_id=place.id, mark=0)
+            db.session.add(rating)
+            db.session.commit()
             flash('Публікація успішно створена', 'success')
             return redirect(url_for('place_bp_in.place_view',
                                     place_id=place.id))
