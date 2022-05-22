@@ -49,16 +49,13 @@ class Place(db.Model):  # type: ignore
     def total_comments(self):
         return Comment.query.filter(Comment.place_id == self.id).count()
 
-
     @hybrid_property
     def average_rating(self):
         ratings = db.session.query(Rating.mark).filter(
             Rating.place_id == self.id).all()
         ratings_list = list(itertools.chain(*ratings))
-        if len(ratings_list) > 1:
-            return round(sum(ratings_list)/(len(ratings_list) - 1), 1)
-        elif len(ratings_list) == 1 and ratings_list[0] == 0:
-            return 0
+        if len(ratings_list) > 0:
+            return round(sum(ratings_list) / len(ratings_list), 1)
         return 0
 
     @average_rating.expression
@@ -67,8 +64,9 @@ class Place(db.Model):  # type: ignore
             Rating.place_id == cls.id).all()
         ratings_list = list(itertools.chain(*ratings))
         if len(ratings_list) > 0:
-            return select([func.sum(Rating.mark)/func.count(Rating.mark)]).\
-                where(and_(Rating.place_id == cls.id)).label(
+            return select(
+                [func.sum(Rating.mark) / func.count(Rating.mark)]).where(
+                and_(Rating.place_id == cls.id)).label(
                 'average_rating')
         else:
             return select(
