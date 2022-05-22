@@ -2,7 +2,7 @@ from .models import Category, Place, Region
 from flask_wtf import FlaskForm
 from wtforms import (StringField, SubmitField, SelectField, TextAreaField,
                      ValidationError)
-from wtforms.validators import DataRequired, Length
+from wtforms.validators import DataRequired, Length, Regexp
 import re
 
 
@@ -37,7 +37,11 @@ class FormPlaceCreate(FlaskForm):
     )
     location = StringField(
         "Місце розташування(посилання на гугл карти)",
-        validators=[DataRequired(message='Місце повинно мати розташування')]
+        validators=[DataRequired(message='Місце повинно мати розташування'),
+                    Regexp('^https://www.google.com/maps/place.*$', 0,
+                           "Повинно міститися посилання на google maps"
+                           "(https://www.google.com/maps/place/...)")
+                    ]
     )
     submit = SubmitField('Створити')
 
@@ -89,7 +93,11 @@ class FormPlaceUpdate(FlaskForm):
     )
     location = StringField(
         "Місце розташування(посилання на гугл карти)",
-        validators=[DataRequired(message='Місце повинно мати розташування')]
+        validators=[DataRequired(message='Місце повинно мати розташування'),
+                    Regexp('^https://www.google.com/maps/place.*$', 0,
+                           "Повинно міститися посилання на google maps"
+                           "(https://www.google.com/maps/place/...)")
+                    ]
     )
     submit = SubmitField('Оновити')
 
