@@ -55,11 +55,14 @@ class BaseTestCase(TestCase):
             Region(name='Київська'),
             Region(name='Одеська'),
             Place(category_id=1, user_id=1, region_id=1, title='Назва місця 1',
-                 content='Короткий опис місця 1', location='Ukraine'),
+                  content='Короткий опис місця 1',
+                  location='https://www.google.com/maps/place'),
             Place(category_id=2, user_id=2, region_id=2, title='Назва місця 2',
-                  content='Короткий опис місця 2', location='Ukraine'),
+                  content='Короткий опис місця 2',
+                  location='https://www.google.com/maps/place'),
             Place(category_id=2, user_id=2, region_id=3, title='Назва місця 3',
-                  content='Короткий опис місця 3', location='Ukraine')
+                  content='Короткий опис місця 3',
+                  location='https://www.google.com/maps/place')
         ])
         db.session.commit()
 
@@ -77,7 +80,9 @@ class TestsCRUD(BaseTestCase):
                                           'region': 1,
                                           'title': 'Заголовок місця 5',
                                           'content': 'Короткий опис місця 5',
-                                          'location': 'Ukraine'
+                                          'location':
+                                              'https://www.google.com/maps'
+                                              '/place'
                                           },
                                     follow_redirects=True)
         self.assertNotEqual(response.status_code, 200)
@@ -106,7 +111,8 @@ class TestsCRUD(BaseTestCase):
                                                    '1(оновлений)',
                                           'content': 'Короткий опис місця '
                                                      '1(оновлений)',
-                                          'location': 'Ukraine(оновлено)'},
+                                          'location': 'https://www.google.com'
+                                                      '/maps/place'},
                                     follow_redirects=True)
 
         self.assertNotEqual(response.status_code, 200)
@@ -132,7 +138,8 @@ class TestsCRUD(BaseTestCase):
                                               'region': 1,
                                               'title': 'Заголовок місця 6',
                                               'content': 'Короткий опис місця 6',
-                                              'location': 'Ukraine'
+                                              'location': 'https://www.googl'
+                                                          'e.com/maps/place'
                                               },
                                         follow_redirects=True)
             self.assert200(response)
@@ -188,7 +195,8 @@ class TestsCRUD(BaseTestCase):
                                                        '3(оновлений)',
                                               'content': 'Короткий опис місця '
                                                          '3(оновлений)',
-                                              'location': 'Ukraine(оновлено)'},
+                                              'location': 'https://www.google.'
+                                                          'com/maps/place'},
                                         follow_redirects=True)
 
             if place.user_id == current_user.id:
@@ -215,6 +223,7 @@ class TestsCRUD(BaseTestCase):
                 self.assert404(response)
             else:
                 self.assert403(response)
+
 
 if __name__ == '__main__':
     unittest.main()
