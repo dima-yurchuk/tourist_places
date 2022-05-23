@@ -56,23 +56,17 @@ class Place(db.Model):  # type: ignore
         ratings_list = list(itertools.chain(*ratings))
         if len(ratings_list) > 0:
             return round(sum(ratings_list) / len(ratings_list), 1)
-        return 0
+        else:
+            return 0.0
+
 
     @average_rating.expression
     def average_rating(cls):
-        ratings = db.session.query(Rating.mark).filter(
-            Rating.place_id == cls.id).all()
-        ratings_list = list(itertools.chain(*ratings))
-        if len(ratings_list) > 0:
-            return select(
-                [func.sum(Rating.mark) / func.count(Rating.mark)]).where(
-                and_(Rating.place_id == cls.id)).label(
-                'average_rating')
-        else:
-            return select(
-                [func(func.sum(Rating.mark))]).where(
-                and_(Rating.place_id == cls.id)).label(
-                'average_rating')
+        return select(
+            [func.coalesce(func.avg(Rating.mark), 0.0)]).where(
+            and_(Rating.place_id == cls.id)).label(
+            'average_rating')
+
 
     def __repr__(self):
         return f'<Place {self.id} {self.title} >'

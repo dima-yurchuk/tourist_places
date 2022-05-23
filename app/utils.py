@@ -6,7 +6,8 @@ def handle_post_view(places, request_args):
     page = request_args.get('page', 1, type=int)
     sort_by = request_args.get('sort_by', 'newest', type=str)
     if sort_by == 'rating':
-        places = places.order_by(Place.average_rating.desc())
+        places = places.order_by(Place.average_rating.desc(),
+                                 Place.created_at.desc())
     elif sort_by == 'oldest':
         # print('oldest')
         places = places.order_by(Place.created_at.asc())

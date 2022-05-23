@@ -1,5 +1,5 @@
 from flask import render_template, request, current_app as app, current_app
-from .tourist_places.models import Place, Category
+from .tourist_places.models import Place, Category, Rating
 from .utils import handle_post_view
 from app.tourist_places.models import Category
 from app import db
@@ -16,6 +16,4 @@ def home():
 
 @app.route('/contacts')
 def contacts():
-    category = Category(name='test')
-    db.session.add(category)
     return render_template('contacts.html', title='Контакти')
