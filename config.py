@@ -4,7 +4,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 SQLALCHEMY_TRACK_MODIFICATIONS = True
-WTF_CRSF_ENAVLED = True
+WTF_CSRF_ENABLED = True
 PLACE_IN_PAGE = 3
 
 MAIL_SERVER = 'smtp.googlemail.com'

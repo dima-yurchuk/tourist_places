@@ -43,6 +43,9 @@ def create_app(config_filename=None):
         mail.init_app(app)
         search.init_app(app)
         migrate.init_app(app, db)
+        from flask_wtf.csrf import CSRFProtect
+
+        csrf = CSRFProtect(app)
         cloudinary.config(
             cloud_name="hvl04koiz",
             api_key="321695983177318",

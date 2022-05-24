@@ -1,3 +1,5 @@
+import json
+
 from flask import current_app as app, render_template, flash, redirect, \
     url_for, abort, request, current_app
 from .models import Region, Place, Category, Type, Comment, Rating
@@ -50,18 +52,27 @@ def place_create():
 def place_view(place_id):
     form_comment = FormComment()
     place = Place.query.get_or_404(place_id)
-    comments = Comment.query.filter_by(place_id=place_id).all()
-    if form_comment.validate_on_submit() and current_user.is_authenticated:
+    comments = Comment.query.filter_by(place_id=place_id).\
+        order_by(Comment.created_at.desc())
+    if request.method == 'POST' and current_user.is_authenticated:
         comment = Comment(user_id=current_user.id, place_id=place_id,
-                          text=form_comment.comment.data)
+                          text=request.get_json()['comment_text'])
         try:
             db.session.add(comment)
             db.session.commit()
-            return redirect(
-                url_for('place_bp_in.place_view', place_id=place.id))
+            return jsonify({'commentAdded': True,
+                            'commentText': comment.text,
+                            'commentUserId': comment.user_id,
+                            'commentId': comment.id,
+                            'commentUserBrPicture': comment.user_br.picture,
+                            'commentUserBrUsername': comment.user_br.username,
+                            'commentCreatedAt': comment.created_at.
+                            strftime("%H:%M %d.%m.%Y")
+            })
         except:
             db.session.rollback()
-            flash('Помилка додавання коменнтаря', 'danger')
+            return jsonify({'commentAdded': False})
+            # flash('Помилка додавання коменнтаря', 'danger')
     return render_template('place_view.html', form=form_comment, place=place,
                            comments=comments, title=place.title)
 
@@ -119,6 +130,7 @@ def place_delete(place_id):
         db.session.commit()
         flash('Публікацію успішно видалено!', 'success')
     except:
+        db.session.rollback()
         flash('Помилка при видаленні публікації', 'danger')
     return redirect(url_for('home'))
 
@@ -135,6 +147,7 @@ def comment_delete(comment_id):
         db.session.commit()
         # flash('Публікацію успішно видалено!', 'success')
     except:
+        db.session.rollback()
         flash('Помилка при видаленні коментаря', 'danger')
     return redirect(url_for('place_bp_in.place_view', place_id=place_id))
 
@@ -176,7 +189,7 @@ def filter_category_region():
                            category_id_list=category_id_list,
                            region_id_list=region_id_list)
 
-@place_bp.route('/<int:place_id>/favourite_handle', methods=["GET", "POST"])
+@place_bp.route('/<int:place_id>/favourite_handle')
 @login_required
 def favourite_list_handle(place_id):
     type_place = Type.query.filter_by(place_id=place_id,
@@ -208,7 +221,7 @@ def favourite_list_handle(place_id):
             return jsonify({'added': True})
 
 
-@place_bp.route('/<int:place_id>/visited_handle', methods=["GET", "POST"])
+@place_bp.route('/<int:place_id>/visited_handle')
 @login_required
 def visited_list_handle(place_id):
     type_place = Type.query.filter_by(place_id=place_id,
@@ -242,8 +255,7 @@ def visited_list_handle(place_id):
             return jsonify({'added': True})
 
 
-@place_bp.route('/<int:place_id>/want_to_visit_handle',
-                methods=["GET", "POST"])
+@place_bp.route('/<int:place_id>/want_to_visit_handle')
 @login_required
 def want_to_visit_list_handle(place_id):
     type_place = Type.query.filter_by(place_id=place_id,
@@ -286,25 +298,21 @@ def rate_place(place_id, mark):
         try:
             db.session.add(rating)
             db.session.commit()
-            return redirect(url_for('place_bp_in.place_view',
-                                    place_id=place_id))
+            return jsonify({'rated': True})
         except:
             db.session.rollback()
             flash('Помилка оцінки місця',
                   'danger')
-            return redirect(url_for('place_bp_in.place_view',
-                                    place_id=place_id))
+            return jsonify({'rated': False})
     else:
         try:
             db.session.delete(rating)
             db.session.commit()
-            return redirect(url_for('place_bp_in.place_view',
-                                    place_id=place_id))
+            return jsonify({'rated': False})
         except:
             db.session.rollback()
             flash('Помилка при видаленні оцінки', 'danger')
-            return redirect(url_for('place_bp_in.place_view',
-                                    place_id=place_id))
+            return jsonify({'rated': True})
 
 
 @place_bp.route('/search', methods=["GET"])
