@@ -298,21 +298,25 @@ def rate_place(place_id, mark):
         try:
             db.session.add(rating)
             db.session.commit()
-            return jsonify({'rated': True})
+            return redirect(url_for('place_bp_in.place_view',
+                                    place_id=place_id))
         except:
             db.session.rollback()
             flash('Помилка оцінки місця',
                   'danger')
-            return jsonify({'rated': False})
+            return redirect(url_for('place_bp_in.place_view',
+                                    place_id=place_id))
     else:
         try:
             db.session.delete(rating)
             db.session.commit()
-            return jsonify({'rated': False})
+            return redirect(url_for('place_bp_in.place_view',
+                                    place_id=place_id))
         except:
             db.session.rollback()
             flash('Помилка при видаленні оцінки', 'danger')
-            return jsonify({'rated': True})
+            return redirect(url_for('place_bp_in.place_view',
+                                    place_id=place_id))
 
 
 @place_bp.route('/search', methods=["GET"])
