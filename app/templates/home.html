@@ -6,6 +6,7 @@
         <div class="col-lg-2" style="background: rgba(255, 255, 255, 0.4);">
             <form method="post"
                   action="{{url_for('place_bp_in.filter_category_region')}}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <h5 align="center" class="filter-title">Області</h5>
                 {%for region in regions%}
                 <div class="ms-3" >
